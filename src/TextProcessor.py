@@ -1,7 +1,8 @@
 import config
+from config import punctuations, extra_stop_words
 import re
 from nltk.corpus import stopwords
-import Stemmer
+from Stemmer import Stemmer
 
 
 # import pprint
@@ -9,14 +10,15 @@ import Stemmer
 
 class TextProcessor(object):
     def __init__(self):
-        self.stemmer = Stemmer.Stemmer('english')
-        self.stop_words = set(stopwords.words('english') + list("?:!.,;"))
+        self.stemmer = Stemmer('english')
+        self.stop_words = set(stopwords.words('english') + punctuations + extra_stop_words)
 
         self.token_regex = re.compile(config.token_regex)
         self.infobox_regex = re.compile(config.infobox_regex)
         self.category_regex = re.compile(config.category_regex)
         self.link_regex = re.compile(config.links_regex)
         self.reference_regex = re.compile(config.reference_regex)
+        self.garbage_regex = re.compile(config.garbage_regex)
 
         self.doc_map = {}
 
@@ -24,13 +26,13 @@ class TextProcessor(object):
         self.doc_map = {}
         title = doc['title'].lower()
         content = doc['text'].lower()
+        self.cleanup(content)
         self.extract_title(title)
         self.extract_infobox(content)
         self.extract_categories(content)
         self.extract_links(content)
         self.extract_references(content)
-        self.cleanup(content)
-        # print()
+        return self.doc_map
 
     def extract_title(self, content):
         # print("Title: ")
@@ -81,8 +83,10 @@ class TextProcessor(object):
 
     def cleanup(self, content, add_tag='', stem=True):
         stem_sentence = [(self.stemmer.stemWord(x) if stem else x) for x in
-                         self.token_regex.split(content.strip()) if
-                         (x not in self.stop_words)]
+                         self.token_regex.split(content.strip()) if (x not in self.stop_words)]
+        stem_sentence = [x for x in stem_sentence if
+                         len(x) > 1 and (not self.garbage_regex.match(x)) and
+                         not (x[0] in '0123456789' and len(x) > 4)]
         for token in stem_sentence:
             if token in self.doc_map:
                 if add_tag == "":

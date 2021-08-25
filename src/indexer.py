@@ -14,5 +14,4 @@ if __name__ == '__main__':
     # pprint.pprint(handler.result)
     end = time.time() - start
 
-    print("Number of documents: ", handler.doc_count)
     print("Time taken: ", end)

@@ -1,5 +1,6 @@
 import xml.sax
 from TextProcessor import TextProcessor
+from InvertedIndex import InvertedIndex
 
 
 class WikiParser(xml.sax.handler.ContentHandler):
@@ -12,6 +13,7 @@ class WikiParser(xml.sax.handler.ContentHandler):
         self.processor = TextProcessor()
         self.titles = []
         self.doc_count = 0
+        self.indexer = InvertedIndex()
 
     def parse(self, f):
         xml.sax.parse(f, self)
@@ -30,8 +32,8 @@ class WikiParser(xml.sax.handler.ContentHandler):
         if name == 'page':
             self.titles.append(self._page['title'])
             self.doc_count += 1
-            self.processor.processDoc(self._page)
-            # self.processor.extract_infobox(self._page['text'])
+            tok_doc = self.processor.processDoc(self._page)
+            self.indexer.merge_tokens(self.doc_count, tok_doc)
 
         if name in self.tags:
             if name != 'id':
@@ -42,5 +44,6 @@ class WikiParser(xml.sax.handler.ContentHandler):
 
     def getResult(self, path_to_wiki_dump):
         self.parse(str(path_to_wiki_dump))
-        print("Number of tokens: ", len(self.processor.doc_map))
+        print("Number of tokens: ", self.indexer.token_count)
+        print("Number of docs: ", self.doc_count)
         # return self.result

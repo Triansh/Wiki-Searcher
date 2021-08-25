@@ -1,4 +1,5 @@
 import xml.sax
+import config
 from TextProcessor import TextProcessor
 from InvertedIndex import InvertedIndex
 
@@ -34,6 +35,11 @@ class WikiParser(xml.sax.handler.ContentHandler):
             self.doc_count += 1
             tok_doc = self.processor.processDoc(self._page)
             self.indexer.merge_tokens(self.doc_count, tok_doc)
+            # if self.indexer.token_count >= config.FILE_TERM_SIZE:
+            #     pass
+
+        if name == 'mediawiki':
+            self.indexer.finish()
 
         if name in self.tags:
             if name != 'id':

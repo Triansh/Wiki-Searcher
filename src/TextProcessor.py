@@ -3,14 +3,12 @@ from config import punctuations, extra_stop_words
 import re
 from nltk.corpus import stopwords
 from Stemmer import Stemmer
-
-
-# import pprint
-
+# from nltk.stem import LancasterStemmer
 
 class TextProcessor(object):
     def __init__(self):
         self.stemmer = Stemmer('english')
+        # self.stemmer = LancasterStemmer()
         self.stop_words = set(stopwords.words('english') + punctuations + extra_stop_words)
 
         self.token_regex = re.compile(config.token_regex)
@@ -24,66 +22,53 @@ class TextProcessor(object):
 
     def processDoc(self, doc):
         self.doc_map = {}
-        title = doc['title'].lower()
+        title = doc['title']
         content = doc['text'].lower()
-        self.cleanup(content)
-        self.extract_title(title)
+        self.cleanup(content, '', False)
+        self.extract_title(title.lower())
         self.extract_infobox(content)
         self.extract_categories(content)
         self.extract_links(content)
-        self.extract_references(content)
+        self.extract_references(content + title.lower())
         return self.doc_map
 
+    # Extract titles and don't stem it
     def extract_title(self, content):
-        # print("Title: ")
         title = content.strip()
-        texts = self.cleanup(title, 't', False)
-
-        # pprint.pprint(texts)
+        texts = self.cleanup(title, 't', True, False)
 
     # Remove infoboxes to avoid redundant content
     def extract_infobox(self, content):
-        # print("Infobox: ")
-        splits = [x.start() for x in self.infobox_regex.finditer(content)]
-        # print("Len splits:", len(splits))
+        splits = [x.end() for x in self.infobox_regex.finditer(content)]
         texts = [self.cleanup(content[index:(index + x)], 'i') for index in splits if
                  (x := content[index:].find('\n}}')) != -1]
 
-        # pprint.pprint(texts)
-
     # Remove Category to avoid redundant content
     def extract_categories(self, content):
-        # print("Categories: ")
-        splits = [x.start() for x in self.category_regex.finditer(content)]
-        # print("Len splits:", len(splits))
+        splits = [x.end() for x in self.category_regex.finditer(content)]
         texts = [self.cleanup(content[index:(index + x)], 'c') for index in splits if
                  (x := content[index:].find(']]')) != -1]
 
-        # pprint.pprint(texts)
-
-    # Remove refernce tags and https to avoid redundant content
+    # Remove reference tags and https to avoid redundant content
     def extract_references(self, content):
-        # print("References: ")
-        splits = [x.start() for x in self.reference_regex.finditer(content)]
-        # print("Len splits:", len(splits))
-        texts = [(content[index:(index + x)], '') for index in splits if
+        splits = [x.end() for x in self.reference_regex.finditer(content)]
+        texts = [self.cleanup(content[index:(index + x)], 'r') for index in splits if
                  (x := content[index:].find('</ref>')) != -1]
-
-        # pprint.pprint(texts)
+        # print(texts)
 
     # Remove https and cite to avoid redundant content
     def extract_links(self, content):
-        # print("Links: ")
-        splits = [x.start() for x in self.link_regex.finditer(content)]
-        # print("Len splits:", len(splits))
-        texts = [(content[index:(index + x)], '') for index in splits if
+        splits = [x.end() for x in self.link_regex.finditer(content)]
+        texts = [self.cleanup(content[index:(index + x)], 'l') for index in splits if
                  (x := content[index:].find('\n\n')) != -1]
+        # print(texts)
 
-        # pprint.pprint(texts)
+    def cleanup(self, content, add_tag, reduce=True, stem=True):
 
-    def cleanup(self, content, add_tag='', stem=True):
         stem_sentence = [(self.stemmer.stemWord(x) if stem else x) for x in
                          self.token_regex.split(content.strip()) if (x not in self.stop_words)]
+        if reduce:
+            stem_sentence = set(stem_sentence)
         stem_sentence = [x for x in stem_sentence if
                          len(x) > 1 and (not self.garbage_regex.match(x)) and
                          not (x[0] in '0123456789' and len(x) > 4)]
@@ -94,7 +79,7 @@ class TextProcessor(object):
                 else:
                     self.doc_map[token][1] += add_tag
             else:
-                self.doc_map[token] = [1, 'b']
+                self.doc_map[token] = [1, '']
 
-        return ""
         # return " ".join(stem_sentence)
+        return ""

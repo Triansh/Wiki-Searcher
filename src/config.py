@@ -7,3 +7,5 @@ garbage_regex = r"([0-9]+[a-z]+[0-9a-z]+)|([a-z]+[0-9]+[0-9a-z]+)"
 
 extra_stop_words = ['https', 'url', 'http', 'ref']
 punctuations = list("?:!.,;")
+
+FILE_TERM_SIZE = 30000

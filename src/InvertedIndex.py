@@ -3,11 +3,11 @@ import os
 
 class InvertedIndex(object):
 
-    def __init__(self):
+    def __init__(self, path_to_index):
         self.token_map = {}
         self.token_count = 0
-        self.path_to_index = os.getcwd() + '/indexes'
-        self.file_path = self.path_to_index + '/index.txt'
+        self.path_to_index = os.path.join(os.getcwd(), path_to_index)
+        self.file_path = os.path.join(self.path_to_index, 'index.txt')
 
     @staticmethod
     def format_tuple(doc_id, count, tags):

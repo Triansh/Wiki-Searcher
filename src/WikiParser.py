@@ -1,5 +1,4 @@
 import xml.sax
-import config
 from TextProcessor import TextProcessor
 from InvertedIndex import InvertedIndex
 
@@ -7,6 +6,11 @@ from InvertedIndex import InvertedIndex
 class WikiParser(xml.sax.handler.ContentHandler):
     def __init__(self):
         super().__init__()
+
+        self.parser = xml.sax.make_parser()
+        self.parser.setFeature(xml.sax.handler.feature_namespaces, 0)
+        self.parser.setContentHandler(self)
+
         self._charBuffer = ""
         self._page = {}
         self.id_taken = False
@@ -17,7 +21,7 @@ class WikiParser(xml.sax.handler.ContentHandler):
         self.indexer = InvertedIndex()
 
     def parse(self, f):
-        xml.sax.parse(f, self)
+        self.parser.parse(f)
 
     def characters(self, data):
         self._charBuffer += data
@@ -35,8 +39,6 @@ class WikiParser(xml.sax.handler.ContentHandler):
             self.doc_count += 1
             tok_doc = self.processor.processDoc(self._page)
             self.indexer.merge_tokens(self.doc_count, tok_doc)
-            # if self.indexer.token_count >= config.FILE_TERM_SIZE:
-            #     pass
 
         if name == 'mediawiki':
             self.indexer.finish()

@@ -9,9 +9,7 @@ if __name__ == '__main__':
     handler = WikiParser()
     # parser.setContentHandler(handler)
     start = time.time()
-    # result = parser.parse(path_to_wiki)
     handler.getResult(path_to_wiki)
-    # pprint.pprint(handler.result)
     end = time.time() - start
 
     print("Time taken: ", end)

@@ -7,18 +7,16 @@ class InvertedIndex(object):
         self.token_map = {}
         self.token_count = 0
         self.path_to_index = os.getcwd() + '/indexes'
-
-    def get_file_path(self):
-        return self.path_to_index + '/index.txt'
+        self.file_path = self.path_to_index + '/index.txt'
 
     @staticmethod
     def format_tuple(doc_id, count, tags):
-        return ','.join((str(doc_id), str(count), ''.join(set(list(tags)))))
+        return ','.join((str(doc_id), str(count), ''.join(tags)))
 
     def finish(self):
         formatted_string = '\n'.join([tok + ':' + ' '.join(self.token_map[tok])
                                       for tok in sorted(self.token_map.keys())])
-        with open(self.get_file_path(), 'w') as f:
+        with open(self.file_path, 'w') as f:
             f.write(formatted_string)
 
     def merge_tokens(self, doc_id, doc_map):

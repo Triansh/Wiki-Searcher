@@ -1,13 +1,11 @@
 token_regex = r'[^a-z0-9]+'
-infobox_regex = r"{{infobox|{{ infobox"
-ignore_ref_regex = r"<ref[^/>]*/>"
-reference_regex = r"<ref[^/>]*/>"  # r"(< ref([^>])*>)|(<ref([^>])*>)"
-category_regex = r"\[\[.*category"
+infobox_regex = r"{{ ?infobox(?:.|\n)*?\n}}"
+ignore_ref_regex = r"(< ?ref[^/>]*/>)"
+reference_regex = r"(< ?ref([^>])*>.*?</ref>)"
+category_regex = r"\[\[.*category.*?\]\]"
 links_regex = r"==.*external links.*==|==.*links.*=="
 garbage_regex = r"([0-9]+[a-z]+[0-9a-z]+)|([a-z]+[0-9]+[0-9a-z]+)|(\d{4}\d+)"
 http_regex = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
-
-punctuations = list("?:!.,;")
 
 FILE_TERM_SIZE = 30000
 

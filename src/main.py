@@ -11,7 +11,7 @@
 # punctuations = "?:!.,;"
 #
 #
-# def processDoc(doc):
+# def process_doc(doc):
 #     token_words = word_tokenize(doc)
 #     token_words = [x for x in token_words if x not in punctuations]
 #     stem_sentence = [porter.stem(x) for x in token_words if x not in stop_words]
@@ -31,6 +31,6 @@
 #         "He was running and eating at same time. He has bad habit of swimming after playing long hours in the Sun.",
 #     ]
 #     # x = [word_tokenize(x.lower()) for x in sentence]
-#     x = [processDoc(x.lower()) for x in sentence]
+#     x = [process_doc(x.lower()) for x in sentence]
 #
 #     print("\n".join(x))

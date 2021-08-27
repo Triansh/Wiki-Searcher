@@ -15,17 +15,17 @@ class TextProcessor(object):
         self.reference_regex = re.compile(config.reference_regex)
 
         self.garbage_regex = re.compile(config.garbage_regex)
-        self.ignore_regex = re.compile(config.ignore_ref_regex)
+        self.ignore_ref_regex = re.compile(config.ignore_ref_regex)
         self.http_regex = re.compile(config.http_regex)
 
         self.doc_map = {}
 
     def remove_pattern(self, content):
-        content = self.ignore_regex.sub(' ', content)
+        content = self.ignore_ref_regex.sub(' ', content)
         content = self.http_regex.sub(' ', content)
         return content
 
-    def processDoc(self, doc):
+    def process_doc(self, doc):
         self.doc_map = {}
         title = doc['title'].lower()
         content = self.remove_pattern(doc['text'].lower())
@@ -45,21 +45,18 @@ class TextProcessor(object):
 
     # Remove infoboxes to avoid redundant content
     def extract_infobox(self, content):
-        splits = [x.end() for x in self.infobox_regex.finditer(content)]
-        all(self.cleanup(content[index:(index + x)], 'i') for index in splits if
-            (x := content[index:].find('\n}}')) != -1)
+        all(self.cleanup(text[(x + 7):], 'i') for text in self.infobox_regex.findall(content) if
+            (x := text.find('infobox')) != -1)
 
     # Remove Category to avoid redundant content
     def extract_categories(self, content):
-        splits = [x.end() for x in self.category_regex.finditer(content)]
-        all(self.cleanup(content[index:(index + x)], 'c') for index in splits if
-            (x := content[index:].find(']]')) != -1)
+        all(self.cleanup(text[(x + 8):], 'c') for text in self.category_regex.findall(content) if
+            (x := text.find('category')) != -1)
 
     # Remove reference tags and https to avoid redundant content
     def extract_references(self, content):
-        splits = [x.end() for x in self.reference_regex.finditer(content)]
-        all(self.cleanup(content[index:(index + x)], 'r') for index in splits if
-            (x := content[index:].find('</ref>')) != -1)
+        all(self.cleanup(text[0][(x + 1):], 'r') for text in self.reference_regex.findall(content)
+            if (x := text[0].find('>')) != -1)
 
     # Remove https and cite to avoid redundant content
     def extract_links(self, content):
@@ -68,6 +65,10 @@ class TextProcessor(object):
             (x := content[index:].find('\n\n')) != -1)
 
     def cleanup(self, content, add_tag, reduce=True, stem=True):
+
+        # if add_tag == 'i':
+        #     print(content)
+        #     print()
 
         stem_sentence = [(self.stemmer.stemWord(x) if stem else x) for x in
                          self.token_regex.split(content.strip()) if (x not in self.stop_words)]

@@ -41,7 +41,7 @@ class WikiParser(xml.sax.handler.ContentHandler):
         if name == 'page':
             self.titles.append(self._page['title'])
             self.doc_count += 1
-            tok_doc = self.processor.processDoc(self._page)
+            tok_doc = self.processor.process_doc(self._page)
             self.indexer.merge_tokens(self.doc_count, tok_doc)
 
         if name == 'mediawiki':

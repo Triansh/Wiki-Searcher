@@ -24,11 +24,7 @@ class TextProcessor(object):
     def remove_pattern(self, content):
         content = self.ignore_ref_regex.sub(' ', content)
         content = self.http_regex.sub(' ', content)
-        # content = self.attr_regex.sub(dashrepl, content)
         content = self.attr_regex.sub(lambda x: f' {x.group(0)[-1]}', content)
-        # print(content)
-        # print()
-        # print()
         return content
 
     def process_doc(self, doc):

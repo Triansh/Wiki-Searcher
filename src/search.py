@@ -1,3 +1,5 @@
+import json
+import time
 import os, sys
 import re
 from Stemmer import Stemmer
@@ -10,61 +12,85 @@ class QueryProcessor(object):
 
         self.stemmer = Stemmer('english')
         self.stop_words = set(extra_stop_words)
+
         self.path_to_index = path_to_index
-        self.files = []
-        self.word_token_map = {}
-        self.query_string = []
-        self.tags = "tbircl"
-        self.field_regex = re.compile(r"[tbircl]:")
+        self.file: int
+
+        self.stem_words = set()
+        self.words = {}
         self.mapper = {}
+        self.result = {}
+        self.for_json = {'t': 'title', 'b': 'body', 'i': 'infobox', 'c': 'categories',
+                         'r': 'references', 'l': 'links'}
+
+        self.tags = "tbircl"
+        self.curr_query = {x: [] for x in self.tags}
+        self.field_regex = re.compile(r"[tbircl]:")
+        self.get_files()
 
     def get_files(self):
-        self.files = [open(self.path_to_index + '/index.txt')]
+        self.file = open(self.path_to_index + '/index.txt', 'r')
 
-    def process_query(self, query):
-        query = query.strip()
-        indices = [x.start() for x in self.field_regex.finditer(query)]
+    def load_file_data(self):
+        data = {z[0]: z[1] for x in self.file.readlines()
+                if (z := x.strip().split(':') or True) and z[0] in self.stem_words}
+        data = {w: [(*x.split(',')[1:],) for x in s.split()] for w, s in data.items()}
+        for w, v in data.items():
+            self.words[w] = {x: [] for x in self.tags}
+            for z in v:
+                if len(z) == 1:
+                    self.words[w]['b'].append(int(z[0]))
+                else:
+                    for tag in z[1]:
+                        self.words[w][tag].append(int(z[0]))
+
+    def extract_words(self, query_string):
+        indices = [x.start() for x in self.field_regex.finditer(query_string.strip())]
         if len(indices) <= 0: return
         if indices[0] != 0: indices = [0] + indices
-        parts = [query[i:j].strip() for i, j in zip(indices, indices[1:] + [None])]
-        dic = {x: [] for x in self.tags}
+
+        parts = [query_string[i:j].strip() for i, j in zip(indices, indices[1:] + [None])]
+
         for x in parts:
             if x[1] == ':':
-                dic[x[0]] += [y.strip() for y in x[2:].split() if y != '']
+                self.curr_query[x[0]] += [y.strip().lower() for y in x[2:].split() if y != '']
             else:
-                dic['b'] += [y.strip() for y in x.split() if y != '']
-        self.query_string.append(dic)
+                self.curr_query['b'] += [y.strip().lower() for y in x.split() if y != '']
 
-    def finish(self):
-        print(self.query_string)
+    def process_query(self, query_string):
+        self.extract_words(query_string)
+        self.finish_processing()
+        self.load_file_data()
+        self.getResults()
+
+    def finish_processing(self):
         self.mapper = {w: self.stemmer.stemWord(w)
-                       for x in self.query_string for y in x.values() for z in y
-                       if (w := z.lower()) not in self.stop_words}
-        print(self.mapper)
+                       for x in self.curr_query.values() for w in x
+                       if w not in self.stop_words}
+        self.stem_words = set(self.mapper.values())
 
-    def add_query(self, query):
-        queries = self.process_query(query)
-        # for sent in queries:
-        #     tag = sent[0] if sent[1] == ':' else 'b'
-        #     for word in (sent if tag == 'b' else sent[2:]).split():
-        #         if word in self.word_token_map:
-        #             self.word_token_map[word] += tag
-        #         else:
-        #             self.word_token_map[word] = tag
+    def getResults(self):
+
+        for cat, words in self.curr_query.items():
+            for w in words:
+                self.result[w] = {x: [] for x in self.for_json.values()}
+                if (stem := self.mapper[w]) in self.words:
+                    self.result[w][self.for_json[cat]] = self.words[stem][cat]
+                else:
+                    self.result[w][self.for_json[cat]] = []
+
+        with open('output.json', 'w') as f:
+            f.write(json.dumps(self.result))
 
 
 if __name__ == '__main__':
+    start = time.time()
     path_to_index = sys.argv[1]
-    path_to_query = sys.argv[2]
+    query = ' '.join(sys.argv[2:])
     file_path = os.path.join(os.getcwd(), path_to_index)
-    query_path = os.path.join(os.getcwd(), path_to_query)
-
-    print(path_to_query, path_to_index)
 
     qp = QueryProcessor(file_path)
-    with open(query_path) as f:
-        z = list(map(qp.add_query, f.readlines()))
-        print(z)
-    qp.finish()
+    qp.process_query(query)
+    print("Time taken: ", time.time() - start)
 
     pass

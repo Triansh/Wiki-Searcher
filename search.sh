@@ -1,2 +1,7 @@
-echo $2
-python src/search.py $1 $2
+#!/bin/bash
+
+cat ./queries.txt | while read query;
+ do
+   echo $query
+  python src/search.py ./indexes $query
+done

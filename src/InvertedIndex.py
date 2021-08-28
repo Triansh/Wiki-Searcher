@@ -11,7 +11,7 @@ class InvertedIndex(object):
 
     @staticmethod
     def format_tuple(doc_id, count, tags):
-        x = ','.join((str(doc_id), str(count), ''.join(tags)))
+        x = ','.join((str(count), str(doc_id), ''.join(tags)))
         return x[:-1] if x[-1] == ',' else x
 
     def finish(self):
@@ -21,7 +21,7 @@ class InvertedIndex(object):
             f.write(formatted_string)
 
     def merge_tokens(self, doc_id, doc_map):
-        # (id, count, tags)
+        # (count, id,  tags)
         for tok, val in doc_map.items():
             if tok in self.token_map:
                 self.token_map[tok].append(self.format_tuple(doc_id, val[0], val[1]))

@@ -36,13 +36,13 @@ class QueryProcessor(object):
                 if (z := x.strip().split(':') or True) and z[0] in self.stem_words}
         data = {w: [(*x.split(',')[1:],) for x in s.split()] for w, s in data.items()}
         for w, v in data.items():
-            self.words[w] = {x: [] for x in self.tags}
+            self.words[w] = {x: [] for x in self.for_json.values()}
             for z in v:
                 if len(z) == 1:
-                    self.words[w]['b'].append(int(z[0]))
+                    self.words[w][self.for_json['b']].append(int(z[0]))
                 else:
                     for tag in z[1]:
-                        self.words[w][tag].append(int(z[0]))
+                        self.words[w][self.for_json[tag]].append(int(z[0]))
 
     def extract_words(self, query_string):
         indices = [x.start() for x in self.field_regex.finditer(query_string.strip())]
@@ -71,13 +71,12 @@ class QueryProcessor(object):
 
     def getResults(self):
 
-        for cat, words in self.curr_query.items():
+        for words in self.curr_query.values():
             for w in words:
-                self.result[w] = {x: [] for x in self.for_json.values()}
-                if (stem := self.mapper[w]) in self.words:
-                    self.result[w][self.for_json[cat]] = self.words[stem][cat]
+                if w in self.words:
+                    self.result = self.words[w]
                 else:
-                    self.result[w][self.for_json[cat]] = []
+                    self.result = {x: [] for x in self.for_json.values()}
 
         with open('output.json', 'w') as f:
             f.write(json.dumps(self.result))

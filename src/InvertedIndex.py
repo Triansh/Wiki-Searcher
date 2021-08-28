@@ -1,4 +1,5 @@
 import os
+from config import MAX_TOKEN_SIZE
 
 
 class InvertedIndex(object):
@@ -7,7 +8,9 @@ class InvertedIndex(object):
         self.token_map = {}
         self.token_count = 0
         self.path_to_index = os.path.join(os.getcwd(), path_to_index)
-        self.file_path = os.path.join(self.path_to_index, 'index.txt')
+        self.file_count = 1
+        self.filename = f'index_{self.file_count}.txt'
+        self.file_path = os.path.join(self.path_to_index, self.filename)
 
     @staticmethod
     def format_tuple(doc_id, count, tags):
@@ -20,6 +23,11 @@ class InvertedIndex(object):
         with open(self.file_path, 'w') as f:
             f.write(formatted_string)
 
+    def reset(self):
+        self.token_map = {}
+        self.filename = f'index_{self.file_count}.txt'
+        self.file_path = os.path.join(self.path_to_index, self.filename)
+
     def merge_tokens(self, doc_id, doc_map):
         # (count, id,  tags)
         for tok, val in doc_map.items():
@@ -28,3 +36,8 @@ class InvertedIndex(object):
             else:
                 self.token_map[tok] = [self.format_tuple(doc_id, val[0], val[1])]
                 self.token_count += 1
+
+        # if len(self.token_map) >= MAX_TOKEN_SIZE:
+        #     self.finish()
+        #     self.file_count += 1
+        #     self.reset()

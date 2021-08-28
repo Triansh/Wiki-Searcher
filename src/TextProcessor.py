@@ -17,12 +17,18 @@ class TextProcessor(object):
         self.garbage_regex = re.compile(config.garbage_regex)
         self.ignore_ref_regex = re.compile(config.ignore_ref_regex)
         self.http_regex = re.compile(config.http_regex)
+        self.attr_regex = re.compile(config.attr_regex)
 
         self.doc_map = {}
 
     def remove_pattern(self, content):
         content = self.ignore_ref_regex.sub(' ', content)
         content = self.http_regex.sub(' ', content)
+        # content = self.attr_regex.sub(dashrepl, content)
+        content = self.attr_regex.sub(lambda x: f' {x.group(0)[-1]}', content)
+        # print(content)
+        # print()
+        # print()
         return content
 
     def process_doc(self, doc):

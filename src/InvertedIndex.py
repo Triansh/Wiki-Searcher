@@ -11,7 +11,8 @@ class InvertedIndex(object):
 
     @staticmethod
     def format_tuple(doc_id, count, tags):
-        return ','.join((str(doc_id), str(count), ''.join(tags)))
+        x = ','.join((str(doc_id), str(count), ''.join(tags)))
+        return x[:-1] if x[-1] == ',' else x
 
     def finish(self):
         formatted_string = '\n'.join([tok + ':' + ' '.join(self.token_map[tok])

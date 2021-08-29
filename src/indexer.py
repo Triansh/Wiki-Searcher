@@ -45,7 +45,9 @@ class WikiParser(xml.sax.handler.ContentHandler):
             self.indexer.merge_tokens(self.doc_count, tok_doc)
 
         if name == 'mediawiki':
-            self.indexer.finish()
+            self.indexer.write_files()
+            # self.indexer.start_thread()
+            # self.indexer.finish()
 
         if name in self.tags:
             # if name != 'id':

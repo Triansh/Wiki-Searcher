@@ -13,8 +13,15 @@
 #     f.write('\n'.join(y for y in x))
 import pickle
 
+from Stemmer import Stemmer
+
+s = Stemmer('english')
+L = ['infobox', 'cite', 'reflist', 'category', 'refbegin', 'refend', 'bibliography', 'notes',
+     'see', 'also']
+print([s.stemWord(x) for x in L])
+
 with open('src/stopwords.txt', 'r') as f:
-    l = [x.strip() for x in f.readlines()]
+    l = list(set([x.strip() for x in f.readlines()]))
 
 with open('src/stopwords.pkl', 'wb') as f:
     pickle.dump(l, f)

@@ -133,3 +133,4 @@ dmypy.json
 data/
 transfer.sh
 indexes
+output.json

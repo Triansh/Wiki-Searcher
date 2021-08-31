@@ -35,19 +35,19 @@ class TextProcessor(object):
         title = doc['title'].lower().strip()
 
         content = self.ignore_ref_regex.sub(' ', doc['text'].lower())
-        content = self.extract_infobox(content)
-        content = self.extract_ref2(content)
-        content = self.extract_links(content)
         content = self.extract_ref1(content)
+        content = self.extract_ref2(content)
+        content = self.extract_infobox(content)
+        content = self.extract_links(content)
         content = self.extract_categories(content)
         self.extract_title(title)
-        self.cleanup(self.remove_pattern(content + title), '', False)
+        self.cleanup(self.remove_pattern(content + title), 'b', False)
 
         return self.doc_map
 
     # Extract titles and don't stem it #TODO
     def extract_title(self, title):
-        self.cleanup(title, 't', True, True)
+        self.cleanup(title, 't', True)
 
     # Remove infoboxes
     def extract_infobox(self, content):
@@ -101,22 +101,31 @@ class TextProcessor(object):
 
     def cleanup(self, content, add_tag, reduce=True, stem=True):
 
-        stem_sentence = [(self.stemmer.stemWord(x) if stem else x) for y in
-                         self.token_regex.split(content.strip()) for x in y.split('\'') if
-                         len(x) > 1 and (x not in self.stop_words)]
+        # if add_tag == 'i':
+        #     print(content)
+
+        stem_sentence = [(self.stemmer.stemWord(x) if stem else x)
+                         for y in self.token_regex.split(content.strip()) for x in y.split('\'')
+                         if len(x) > 1 and (x not in self.stop_words)]
+
         if reduce:
             stem_sentence = set(stem_sentence)
         stem_sentence = [x for x in stem_sentence if
                          len(x) > 1
                          # not any(c in self.weird for c in x)
                          and not self.garbage_regex.match(x)
-                         and not (x[0:2] == "00")
+                         and not (x[:2] == "00")
                          ]
+        # if add_tag == 'i':
+        #     print('\n\n')
+        #     print(stem_sentence)
+
         for token in stem_sentence:
             if token in self.doc_map:
-                if add_tag == "":
-                    self.doc_map[token][0] += 1
-                elif self.doc_map[token][1] == '' or self.doc_map[token][1][-1] != add_tag:
+                self.doc_map[token][0] += 1
+                if self.doc_map[token][1][-1] != add_tag:
                     self.doc_map[token][1] += add_tag
             else:
-                self.doc_map[token] = [1, '']
+                self.doc_map[token] = [1, add_tag]
+        # if add_tag == 'i':
+        #     print('\n', self.doc_map['merriwa'])

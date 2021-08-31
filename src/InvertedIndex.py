@@ -22,8 +22,10 @@ class InvertedIndex(object):
 
     @staticmethod
     def format_tuple(doc_id, count, tags):
-        x = ','.join((str(count), str(doc_id), ''.join(tags)))
-        return x[:-1] if x[-1] == ',' else x
+        if tags == 'b':
+            return ','.join((str(count), str(doc_id)))
+        else:
+            return ','.join((str(count), str(doc_id), tags))
 
     # def write_files(self, tok_map, file_num):
     #     formatted_string = '\n'.join([tok + ':' + ' '.join(tok_map[tok])

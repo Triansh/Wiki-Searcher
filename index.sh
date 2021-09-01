@@ -1,1 +1,1 @@
-python src/indexer.py $1 $2 $3
+python src/indexer.py "$1" "$2" "$3"

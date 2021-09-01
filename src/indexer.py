@@ -16,12 +16,14 @@ class WikiParser(xml.sax.handler.ContentHandler):
         self.parser.setContentHandler(self)
 
         self._charBuffer = ""
+        self.dont_take = False
         self._page = {}
         # self.id_taken = False
         self.tags = ['title', 'text']
         self.processor = TextProcessor()
-        self.titles = []
-        self.doc_count = 0
+        # self.titles = []
+        self.doc_count = 1
+        self.total_words = set()
         self.indexer = InvertedIndex(path_to_index_dir)
 
     def parse(self, f):
@@ -39,26 +41,37 @@ class WikiParser(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if name == 'page':
-            self.titles.append(self._page['title'])
-            self.doc_count += 1
+            # if not self.dont_take:
+            # self.titles.append(self._page['title'])
             tok_doc = self.processor.process_doc(self._page)
+            # print(words)
+            # self.total_words = self.total_words.union(words)
             self.indexer.merge_tokens(self.doc_count, tok_doc)
+            self.doc_count += 1
 
-        if name == 'mediawiki':
+        elif name == 'mediawiki':
             self.indexer.write_files()
             # self.indexer.start_thread()
             # self.indexer.finish()
 
+        # elif name == 'title':
+        #     self.dont_take = True if self._charBuffer.lower().startswith("wikipedia:") else False
+        #     if not self.dont_take:
+        #         self._page[name] = self._charBuffer
+        # elif name == 'text':
+        #     if not self.dont_take:
+        #         self._page[name] = self._charBuffer
+        # elif self.id_taken is False:
+        #     self._page[name] = self._charBuffer
+        #     self.id_taken = True
+
         if name in self.tags:
-            # if name != 'id':
             self._page[name] = self._charBuffer
-            # elif self.id_taken is False:
-            #     self._page[name] = self._charBuffer
-            #     self.id_taken = True
 
     def getResult(self, path_to_wiki_dump):
+        # print(self.processor.cleanup('۵۰۰'.lower(), 'g'))
         self.parse(str(path_to_wiki_dump))
-        stats = f"Number of tokens: {self.indexer.token_count}\nNumber of docs: {self.doc_count}"
+        stats = f"{len(self.total_words)}\n{self.indexer.token_count}\n{self.doc_count}"
         with open(self.path_to_stat, 'w') as f:
             f.write(stats)
 

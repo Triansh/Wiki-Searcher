@@ -1,12 +1,14 @@
-token_regex = r'[^\da-z\']+'
-infobox_regex = r"{{ ?infobox(?:.|\n)*?\n}}"
-ignore_ref_regex = r"(< ?ref[^/>]*/>)"
-ref1_regex = r"(< ?ref([^>])*>.*?</ref>)"
+token_regex = r'[^0-9a-z\']+'
+infobox_regex = r"{{ ?infobox(.|\n)*?\n}}"
 category_regex = r"\[\[ ?category.*?\]\]"
+ref1_regex = r"(< ?ref([^>])*>.*?</ref>)"
 ref2_regex = r"== ?references ?==(.|\n)*?\n\n"
 links_regex = r"== ?external links ?==(.|\n)*?\n\n"
-garbage_regex = r"(\d+[a-z]+[\da-z]+)|([a-z]+\d+[\da-z]+)|(\d{4}[a-z\d]+)"
-http_regex = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
-attr_regex = r"\w+ *="
 
+ignore_ref_regex = r"(< ?ref[^/>]*/>)"
+garbage_regex = r"([0-9]+[a-z]+[0-9a-z]+)|([a-z]+[0-9]+[0-9a-z]+)|([0-9]{4}[a-z0-9]+)"
+http_regex = r"(https?://|www.)[^\s]+"
+# http_regex = r"https?://(?:[a-z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-f][0-9a-f]))+"
+# attr_regex = r"(\w+ )*?\w+ *="
+attr_regex = r"[a-z0-9_]+ *="
 MAX_TOKEN_SIZE = 200000

@@ -25,6 +25,7 @@ class TextProcessor(object):
 
         self.total_words = set()
         self.doc_map = {}
+        self.tag = ''
 
     def remove_pattern(self, content):
         content = self.http_regex.sub(' ', content)
@@ -37,12 +38,14 @@ class TextProcessor(object):
         content = doc['text'].lower()
         # words = set(self.token_regex.split(content))
         content = self.ignore_ref_regex.sub(' ', content)
-        content = self.extract_ref1(content)
+        # content = self.extract_ref1(content)
         content = self.extract_ref2(content)
         content = self.extract_categories(content)
         content = self.extract_links(content)
         content = self.extract_infobox(content)
         self.extract_title(title)
+        self.tag = 'b'
+        content = self.extract_ref1(content)
         self.cleanup(self.remove_pattern(content), 'b', False)
 
         return self.doc_map
@@ -55,6 +58,8 @@ class TextProcessor(object):
     def extract_infobox(self, content):
         def res_sub(match_obj):
             t = self.remove_pattern(match_obj.group(0))
+            self.tag = 'i'
+            t = self.extract_ref1(t)
             ind = t.find('infobox')
             self.cleanup(t if ind == -1 else t[(ind + 7):], 'i')
             return ' '
@@ -65,6 +70,8 @@ class TextProcessor(object):
     def extract_categories(self, content):
         def res_sub(match_obj):
             t = self.remove_pattern(match_obj.group(0))
+            self.tag = 'c'
+            t = self.extract_ref1(t)
             ind = t.find(':')
             self.cleanup(t if ind == -1 else t[ind:], 'c')
             return ' '
@@ -81,7 +88,7 @@ class TextProcessor(object):
                 if 'ref' in t[:ind]:
                     self.cleanup(t[ind:], 'r')
                 else:
-                    self.cleanup(t[ind:], 'b')
+                    self.cleanup(t[ind:], self.tag)
             return ' '
 
         return self.ref1_regex.sub(res_sub, content)
@@ -90,6 +97,8 @@ class TextProcessor(object):
     def extract_ref2(self, content):
         def res_sub(match_obj):
             t = self.remove_pattern(match_obj.group(0))
+            self.tag = 'r'
+            t = self.extract_ref1(t)
             ind = t.find('\n')
             self.cleanup(t if ind == -1 else t[ind:], 'r')
             return ' '
@@ -100,6 +109,8 @@ class TextProcessor(object):
     def extract_links(self, content):
         def res_sub(match_obj):
             t = self.remove_pattern(match_obj.group(0))
+            self.tag = 'l'
+            t = self.extract_ref1(t)
             ind = t.find('\n')
             self.cleanup(t if ind == -1 else t[ind:], 'l')
             return ' '
@@ -125,7 +136,7 @@ class TextProcessor(object):
         for token in stem_sentence:
             if token in self.doc_map:
                 self.doc_map[token][0] += 1
-                if self.doc_map[token][1][-1] != add_tag:
-                    self.doc_map[token][1] += add_tag
+                # if self.doc_map[token][1][-1] != add_tag:
+                self.doc_map[token][1].add(add_tag)
             else:
-                self.doc_map[token] = [1, add_tag]
+                self.doc_map[token] = [1, set(add_tag)]

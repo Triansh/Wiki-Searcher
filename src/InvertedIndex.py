@@ -58,9 +58,9 @@ class InvertedIndex(object):
         # (count, id,  tags)
         for tok, val in doc_map.items():
             if tok in self.token_map:
-                self.token_map[tok].append(self.format_tuple(doc_id, val[0], val[1]))
+                self.token_map[tok].append(self.format_tuple(doc_id, val[0], ''.join(val[1])))
             else:
-                self.token_map[tok] = [self.format_tuple(doc_id, val[0], val[1])]
+                self.token_map[tok] = [self.format_tuple(doc_id, val[0], ''.join(val[1]))]
                 self.token_count += 1
 
         # if len(self.token_map) >= MAX_TOKEN_SIZE:

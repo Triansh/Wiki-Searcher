@@ -11,17 +11,21 @@
 #     print(len(x))
 # with open('src/stopwords.txt', 'w') as f:
 #     f.write('\n'.join(y for y in x))
+
+
+# 962 words present in pkl file rn
 import pickle
 
 from Stemmer import Stemmer
 
 s = Stemmer('english')
 L = ['infobox', 'cite', 'reflist', 'category', 'refbegin', 'refend', 'bibliography', 'notes',
-     'see', 'also', 'football', 'opera','operate' ]
+     'see', 'also', 'football', 'opera','operate' , 'category', 'infobox']
 print([s.stemWord(x) for x in L])
 
 with open('src/stopwords.txt', 'r') as f:
     l = list(set([x.strip() for x in f.readlines()]))
+    print(len(l))
 
 with open('src/stopwords.pkl', 'wb') as f:
     pickle.dump(l, f)

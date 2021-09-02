@@ -2,6 +2,7 @@ token_regex = r'[^0-9a-z]+'
 infobox_regex = r"{{ ?infobox(.|\n)*?\n}}"
 category_regex = r"\[\[ ?category.*?\]\]"
 # ref1_regex = r"(< ?ref([^>])*>.*?</ref>)"
+ref1_regex = r"<([^>])*>(.|\n)*?</([^>])*>"
 ref2_regex = r"== ?references ?==(.|\n)*?\n\n"
 links_regex = r"== ?external links ?==(.|\n)*?\n\n"
 
@@ -12,4 +13,3 @@ http_regex = r"(https?://|www.)[^\s]+"
 # attr_regex = r"(\w+ )*?\w+ *="
 attr_regex = r"[a-z0-9_]+ *="
 MAX_TOKEN_SIZE = 200000
-ref1_regex = r"<([^>])*>(.|\n)*?</([^>])*>"

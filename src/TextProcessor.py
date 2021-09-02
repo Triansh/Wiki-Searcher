@@ -23,6 +23,7 @@ class TextProcessor(object):
         self.http_regex = re.compile(config.http_regex)
         self.attr_regex = re.compile(config.attr_regex)
 
+        self.total_words = set()
         self.doc_map = {}
 
     def remove_pattern(self, content):
@@ -75,7 +76,12 @@ class TextProcessor(object):
         def res_sub(match_obj):
             t = self.remove_pattern(match_obj.group(0))
             ind = t.find('>')
-            self.cleanup(t if ind == -1 else t[ind:], 'r')
+            # print(t)
+            if ind != -1:
+                if 'ref' in t[:ind]:
+                    self.cleanup(t[ind:], 'r')
+                else:
+                    self.cleanup(t[ind:], 'b')
             return ' '
 
         return self.ref1_regex.sub(res_sub, content)
@@ -102,9 +108,11 @@ class TextProcessor(object):
 
     def cleanup(self, content, add_tag, reduce=True, stem=True):
 
+        all(self.total_words.add(x) or True for x in self.token_regex.split(content))
+
         stem_sentence = [(self.stemmer.stemWord(x) if stem else x)
-                         for y in self.token_regex.split(content.strip()) for x in y.split('\'')
-                         if len(x) > 1 and (x not in self.stop_words)]
+                         for x in self.token_regex.split(content) if
+                         len(x) > 1 and (x not in self.stop_words)]
 
         if reduce:
             stem_sentence = set(stem_sentence)

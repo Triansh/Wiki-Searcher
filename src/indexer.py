@@ -23,7 +23,6 @@ class WikiParser(xml.sax.handler.ContentHandler):
         self.processor = TextProcessor()
         # self.titles = []
         self.doc_count = 1
-        self.total_words = set()
         self.indexer = InvertedIndex(path_to_index_dir)
 
     def parse(self, f):
@@ -71,7 +70,7 @@ class WikiParser(xml.sax.handler.ContentHandler):
     def getResult(self, path_to_wiki_dump):
         # print(self.processor.cleanup('۵۰۰'.lower(), 'g'))
         self.parse(str(path_to_wiki_dump))
-        stats = f"{len(self.total_words)}\n{self.indexer.token_count}\n{self.doc_count}"
+        stats = f"{len(self.processor.total_words)}\n{self.indexer.token_count}\n{self.doc_count}"
         with open(self.path_to_stat, 'w') as f:
             f.write(stats)
 

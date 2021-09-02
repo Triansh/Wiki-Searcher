@@ -17,7 +17,7 @@ from Stemmer import Stemmer
 
 s = Stemmer('english')
 L = ['infobox', 'cite', 'reflist', 'category', 'refbegin', 'refend', 'bibliography', 'notes',
-     'see', 'also']
+     'see', 'also', 'football', 'opera','operate' ]
 print([s.stemWord(x) for x in L])
 
 with open('src/stopwords.txt', 'r') as f:

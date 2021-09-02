@@ -35,6 +35,7 @@ class QueryProcessor(object):
                 if (z := x.strip().split(':') or True) and z[0] in self.stem_words}
         # {word as key and value of the form [(id,), (id, tbir), ()]
         data = {w: [(*x.split(',')[1:],) for x in s.split()] for w, s in data.items()}
+        # print([x for x in data.keys()])
         for w, v in data.items():
             self.words[w] = {x: [] for x in self.for_json.values()}
             for z in v:
@@ -44,13 +45,14 @@ class QueryProcessor(object):
                     for tag in z[1]:
                         self.words[w][self.for_json[tag]].append(int(z[0]))
         # print(self.words)
+        # print([x for x in self.words.keys()])
 
     def extract_words(self, query_string):
         indices = [x.start() for x in self.field_regex.finditer(query_string.strip())]
         if len(indices) > 0:
             if indices[0] != 0: indices = [0] + indices
             parts = [query_string[i:j].strip() for i, j in zip(indices, indices[1:] + [None])]
-            print(parts)
+            # print(parts)
         else:
             parts = [query_string]
         for x in parts:
@@ -72,28 +74,28 @@ class QueryProcessor(object):
         self.stem_words = set(self.mapper.values())
 
     def getResults(self):
-
+        # print(self.words, self.curr_query)
         for words in self.curr_query.values():
             for w in words:
-                if w in self.words:
-                    self.result[w] = self.words[w]
+                if w in self.mapper:
+                    self.result[w] = self.words[self.mapper[w]]
                 else:
                     self.result[w] = {x: [] for x in self.for_json.values()}
 
         # with open('output.json', 'w') as f:
-        print(json.dumps(self.result, indent=4))
+        print(json.dumps(self.result, indent=4, sort_keys=True))
 
 
 if __name__ == '__main__':
     start = time.time()
     path_to_index = sys.argv[1]
     # query = ' '.join(sys.argv[2:])
-    query = sys.argv[2]
-    print(query)
+    query = sys.argv[2].lower()
+    # print(query)
     file_path = os.path.join(os.getcwd(), path_to_index)
 
     qp = QueryProcessor(file_path)
     qp.process_query(query)
-    print("Time taken: ", time.time() - start)
+    # print("Time taken: ", time.time() - start)
 
     pass

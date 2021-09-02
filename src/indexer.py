@@ -1,5 +1,4 @@
 import sys, os
-import time
 import xml.sax
 from TextProcessor import TextProcessor
 from InvertedIndex import InvertedIndex
@@ -70,20 +69,14 @@ class WikiParser(xml.sax.handler.ContentHandler):
     def getResult(self, path_to_wiki_dump):
         # print(self.processor.cleanup('۵۰۰'.lower(), 'g'))
         self.parse(str(path_to_wiki_dump))
-        stats = f"{len(self.processor.total_words)}\n{self.indexer.token_count}\n{self.doc_count}"
+        stats = f"{len(self.processor.total_words)}\n{self.indexer.token_count}\n"
         with open(self.path_to_stat, 'w') as f:
             f.write(stats)
 
 
 if __name__ == '__main__':
-    start = time.time()
-
     path_to_wiki = sys.argv[1]
     path_to_index = sys.argv[2]
     path_to_stat = sys.argv[3]
     handler = WikiParser(path_to_index, path_to_stat)
     handler.getResult(path_to_wiki)
-
-    end = time.time() - start
-
-    print("Time taken: ", end)

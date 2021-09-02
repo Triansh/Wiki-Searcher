@@ -77,13 +77,13 @@ class QueryProcessor(object):
         # print(self.words, self.curr_query)
         for words in self.curr_query.values():
             for w in words:
-                if w in self.mapper:
+                if w in self.mapper and self.mapper[w] in self.words:
                     self.result[w] = self.words[self.mapper[w]]
                 else:
                     self.result[w] = {x: [] for x in self.for_json.values()}
 
         # with open('output.json', 'w') as f:
-        print(json.dumps(self.result, indent=4, sort_keys=True))
+        print(json.dumps(self.result, indent=4))
 
 
 if __name__ == '__main__':
@@ -91,6 +91,7 @@ if __name__ == '__main__':
     path_to_index = sys.argv[1]
     # query = ' '.join(sys.argv[2:])
     query = sys.argv[2].lower()
+    query = query.replace(',', ' ')
     # print(query)
     file_path = os.path.join(os.getcwd(), path_to_index)
 

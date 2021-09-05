@@ -34,8 +34,8 @@ class TextProcessor(object):
 
     def process_doc(self, doc):
         self.doc_map = {}
-        title = doc['title'].lower().strip()
-        content = doc['text'].lower()
+        title = doc['title'].strip()
+        content = doc['text'].strip()
         # words = set(self.token_regex.split(content))
         content = self.ignore_ref_regex.sub(' ', content)
         # content = self.extract_ref1(content)
@@ -119,7 +119,7 @@ class TextProcessor(object):
 
     def cleanup(self, content, add_tag, reduce=True, stem=True):
 
-        all(self.total_words.add(x) or True for x in self.token_regex.split(content))
+        self.total_words.update(self.token_regex.split(content))
 
         stem_sentence = [(self.stemmer.stemWord(x) if stem else x)
                          for x in self.token_regex.split(content) if
@@ -129,6 +129,7 @@ class TextProcessor(object):
             stem_sentence = set(stem_sentence)
         stem_sentence = [x for x in stem_sentence if
                          len(x) > 1
+                         and not (x[0] in '0123456789' and len(x) > 4)
                          and not (x[:2] == "00")
                          and not self.garbage_regex.match(x)
                          ]

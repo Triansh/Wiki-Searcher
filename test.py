@@ -18,14 +18,19 @@ import pickle
 
 from Stemmer import Stemmer
 
-s = Stemmer('english')
-L = ['infobox', 'cite', 'reflist', 'category', 'refbegin', 'refend', 'bibliography', 'notes',
-     'see', 'also', 'football', 'opera','operate' , 'category', 'infobox']
-print([s.stemWord(x) for x in L])
+# s = Stemmer('english')
+# L = ['infobox', 'cite', 'reflist', 'category', 'refbegin', 'refend', 'bibliography', 'notes',
+#      'see', 'also', 'football', 'opera','operate' , 'category', 'infobox']
+# print([s.stemWord(x) for x in L])
+#
+# with open('src/stopwords.txt', 'r') as f:
+#     l = list(set([x.strip() for x in f.readlines()]))
+#     print(len(l))
+#
+# with open('src/stopwords.pkl', 'wb') as f:
+#     pickle.dump(l, f)
 
-with open('src/stopwords.txt', 'r') as f:
-    l = list(set([x.strip() for x in f.readlines()]))
-    print(len(l))
-
-with open('src/stopwords.pkl', 'wb') as f:
-    pickle.dump(l, f)
+with open('stat_file.txt', 'r') as f:
+    for i in range(10):
+        x = f.readline().strip()
+        print(x)

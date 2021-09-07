@@ -3,6 +3,7 @@ import config
 import re
 import pickle
 from Stemmer import Stemmer
+from collections import Counter
 
 
 class TextProcessor(object):
@@ -10,6 +11,7 @@ class TextProcessor(object):
         self.stemmer = Stemmer('english')
         with open(os.path.join(os.getcwd(), 'src/stopwords.pkl'), 'rb') as f:
             self.stop_words = set(pickle.load(f))
+        self.digits = set('0123456789')
 
         self.token_regex = re.compile(config.token_regex)
         self.infobox_regex = re.compile(config.infobox_regex)
@@ -23,7 +25,10 @@ class TextProcessor(object):
         self.http_regex = re.compile(config.http_regex)
         self.attr_regex = re.compile(config.attr_regex)
 
-        self.total_words = set()
+        self.doc_map = {}
+        self.tag = ''
+
+    def reset(self):
         self.doc_map = {}
         self.tag = ''
 
@@ -33,10 +38,8 @@ class TextProcessor(object):
         return content
 
     def process_doc(self, doc):
-        self.doc_map = {}
         title = doc['title'].strip()
-        content = doc['text'].strip()
-        # words = set(self.token_regex.split(content))
+        content = doc['text']
         content = self.ignore_ref_regex.sub(' ', content)
         # content = self.extract_ref1(content)
         content = self.extract_ref2(content)
@@ -46,13 +49,11 @@ class TextProcessor(object):
         self.extract_title(title)
         self.tag = 'b'
         content = self.extract_ref1(content)
-        self.cleanup(self.remove_pattern(content), 'b', False)
-
-        return self.doc_map
+        self.cleanup(self.remove_pattern(content), 'b')
 
     # Extract titles and don't stem it #TODO
     def extract_title(self, title):
-        self.cleanup(title, 't', True)
+        self.cleanup(title, 't')
 
     # Remove infoboxes
     def extract_infobox(self, content):
@@ -117,27 +118,18 @@ class TextProcessor(object):
 
         return self.link_regex.sub(res_sub, content)
 
-    def cleanup(self, content, add_tag, reduce=True, stem=True):
+    def cleanup(self, content, tag):
 
-        self.total_words.update(self.token_regex.split(content))
+        term_map = Counter(x for x in self.token_regex.split(content)
+                           if len(x) > 1 and x not in self.stop_words)
 
-        stem_sentence = [(self.stemmer.stemWord(x) if stem else x)
-                         for x in self.token_regex.split(content) if
-                         len(x) > 1 and (x not in self.stop_words)]
-
-        if reduce:
-            stem_sentence = set(stem_sentence)
-        stem_sentence = [x for x in stem_sentence if
-                         len(x) > 1
-                         and not (x[0] in '0123456789' and len(x) > 4)
-                         and not (x[:2] == "00")
-                         and not self.garbage_regex.match(x)
-                         ]
-
-        for token in stem_sentence:
-            if token in self.doc_map:
-                self.doc_map[token][0] += 1
-                # if self.doc_map[token][1][-1] != add_tag:
-                self.doc_map[token][1].add(add_tag)
-            else:
-                self.doc_map[token] = [1, set(add_tag)]
+        for token, val in term_map.items():
+            tok = self.stemmer.stemWord(token)
+            if len(tok) > 1 and not tok[:2] == "00" and not (
+                    tok[0] in self.digits and len(tok) > 4) and not self.garbage_regex.match(tok):
+                if tok in self.doc_map:
+                    self.doc_map[tok][0] += val
+                    self.doc_map[tok][1] += tag
+                else:
+                    self.doc_map[tok] = [val, tag]
+        self.doc_map = {k: (v[0], ''.join(set(v[1]))) for k, v in self.doc_map.items()}

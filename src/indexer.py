@@ -50,6 +50,7 @@ class WikiParser(xml.sax.handler.ContentHandler):
         stats = f"""
         Number of total unique tokens: {self.indexer.total_unique_tokens}
         Number of documents: {self.doc_count}
+        Number of intermediate files: {self.indexer.token_file_count}
         Number of index files in index: {self.indexer.index_file_count}
         Number of title files in index: {self.indexer.title_file_count}
         Total files: {self.indexer.index_file_count + self.indexer.title_file_count + 1}"""

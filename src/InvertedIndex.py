@@ -1,6 +1,6 @@
-import heapq
 import os
 import time
+from heapq import heappush, heappop, heapify
 
 from config import MAX_TOKEN_FILE_SIZE, MAX_TITLES, MAX_INDEX_FILE_SIZE
 
@@ -22,12 +22,11 @@ class InvertedIndex(object):
 
         self.files = []
         self.file_opened = []
-        self.files_remaining = set()
-        self.files_to_remove = set()
 
         self.token_map = {}
         self.token_size = 0
         self.posting = {}
+        self.posting_size = 0
         self.titles = []
         self.total_unique_tokens = 0
         self.index_heads = []
@@ -41,19 +40,18 @@ class InvertedIndex(object):
     def get_index_filename(self, file_num):
         return os.path.join(self.path_to_index, f'index_{file_num}.txt')
 
-    def getLine(self, file_num):
+    def get_word(self, file_num):
         if not self.file_opened[file_num]:
             return ''
-        z = self.files[file_num].readline().strip()
+        z = self.files[file_num].readline().rstrip()
         if z == '':
             self.file_opened[file_num] = 0
-            self.files_to_remove.add(file_num)
             return ''
         w, p = z.split(':')
         if w in self.token_map:
             self.token_map[w] += ' ' + p
-            return ''
-        self.token_map[w] = p
+        else:
+            self.token_map[w] = p
         return w
 
     def merge_files(self):
@@ -61,27 +59,27 @@ class InvertedIndex(object):
         self.files = [open(os.path.join(self.path_to_index, filename), 'r')
                       for filename in os.listdir(self.path_to_index) if
                       filename.startswith('__')]
-        self.files_remaining = set(x for x in range(len(self.files)))
         self.file_opened = [1] * len(self.files)
-        heap = [self.getLine(x) for x in range(len(self.files)) if x != '']
-        heapq.heapify(heap)
-        size = 0
+        heap = [(z, x) for x in range(len(self.files)) if (z := self.get_word(x)) != '']
+        heapify(heap)
 
-        while len(heap) > 0:
-            x = heapq.heappop(heap)
+        while len(heap):
+            x, file_no = heappop(heap)
             self.posting[x] = self.token_map.pop(x, '')
-            size += len(x) + len(self.posting[x]) + 1
+            self.posting_size += len(x) + len(self.posting[x]) + 1
+            self.total_unique_tokens += 1
 
-            for f in self.files_remaining:
-                if (w := self.getLine(f)) != '':
-                    self.total_unique_tokens += 1
-                    heapq.heappush(heap, w)
-            self.files_remaining.difference_update(self.files_to_remove)
-            self.files_to_remove = set()
+            while len(heap) and heap[0][0] == x:
+                y, f = heappop(heap)
+                if (w := self.get_word(f)) != '':
+                    heappush(heap, (w, f))
 
-            if size >= MAX_INDEX_FILE_SIZE:
+            if (w := self.get_word(file_no)) != '':
+                heappush(heap, (w, file_no))
+
+            if self.posting_size >= MAX_INDEX_FILE_SIZE:
                 self.write_indexes()
-                size = 0
+                self.posting_size = 0
         self.write_indexes()
 
         print("Time for merging: ", time.time() - end)
@@ -137,11 +135,11 @@ class InvertedIndex(object):
         # (count, id,  tags)
         for tok, val in doc_map.items():
             if tok in self.token_map:
-                z = ' ' + format_tuple(doc_id, val[0], val[1])
+                z = ' ' + format_tuple(doc_id, val[0], ''.join(set(val[1])))
                 self.token_map[tok] += z
                 self.token_size += len(z)
             else:
-                self.token_map[tok] = format_tuple(doc_id, val[0], val[1])
+                self.token_map[tok] = format_tuple(doc_id, val[0], ''.join(set(val[1])))
                 self.token_size += len(self.token_map[tok]) + len(tok) + 1
         if self.token_size >= MAX_TOKEN_FILE_SIZE:
             self.write_tokens()

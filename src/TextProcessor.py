@@ -53,7 +53,7 @@ class TextProcessor(object):
 
     # Extract titles and don't stem it #TODO
     def extract_title(self, title):
-        self.cleanup(title, 't')
+        self.cleanup(title, 't', False)
 
     # Remove infoboxes
     def extract_infobox(self, content):
@@ -118,13 +118,13 @@ class TextProcessor(object):
 
         return self.link_regex.sub(res_sub, content)
 
-    def cleanup(self, content, tag):
+    def cleanup(self, content, tag, stem=True):
 
         term_map = Counter(x for x in self.token_regex.split(content)
                            if len(x) > 1 and x not in self.stop_words)
 
         for token, val in term_map.items():
-            tok = self.stemmer.stemWord(token)
+            tok = self.stemmer.stemWord(token) if stem else token
             if len(tok) > 1 and not tok[:2] == "00" and not (
                     tok[0] in self.digits and len(tok) > 4) and not self.garbage_regex.match(tok):
                 if tok in self.doc_map:
@@ -132,4 +132,3 @@ class TextProcessor(object):
                     self.doc_map[tok][1] += tag
                 else:
                     self.doc_map[tok] = [val, tag]
-        self.doc_map = {k: (v[0], ''.join(set(v[1]))) for k, v in self.doc_map.items()}

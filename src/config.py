@@ -9,8 +9,7 @@ ignore_ref_regex = r"<(?!>/).*?/>"
 garbage_regex = r"([0-9]+[a-z]+[0-9a-z]+)|([a-z]+[0-9]+[0-9a-z]+)"
 http_regex = r"(https?://|www.)[^\s]+"
 attr_regex = r"[a-z0-9_]+ *="
-# attr_regex = r"(\w+ )*?\w+ *="
 
 MAX_TOKEN_FILE_SIZE = 80 * (10 ** 6)
-MAX_TITLES = 2 * (10 ** 5)
-MAX_INDEX_FILE_SIZE = 60 * (10 ** 6)
+MAX_TITLES = 1 * (10 ** 5)
+MAX_INDEX_FILE_SIZE = 50 * (10 ** 6)

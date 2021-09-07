@@ -27,9 +27,12 @@ class InvertedIndex(object):
         self.token_size = 0
         self.posting = {}
         self.posting_size = 0
-        self.titles = []
+
+        self.titles = ""
+        self.doc_freq = ""
+        self.index_heads = ""
+        self.title_count = 0
         self.total_unique_tokens = 0
-        self.index_heads = []
 
     def get_title_filename(self, file_num):
         return os.path.join(self.path_to_index, f'title_{file_num}.txt')
@@ -39,6 +42,9 @@ class InvertedIndex(object):
 
     def get_index_filename(self, file_num):
         return os.path.join(self.path_to_index, f'index_{file_num}.txt')
+
+    def get_doc_freq_filename(self, file_num):
+        return os.path.join(self.path_to_index, f'freq_{file_num}.txt')
 
     def get_word(self, file_num):
         if not self.file_opened[file_num]:
@@ -85,15 +91,16 @@ class InvertedIndex(object):
         print("Time for merging: ", time.time() - end)
 
     def post_cleanup(self):
-        index_heads = '\n'.join(self.index_heads)
         with open(os.path.join(self.path_to_index, 'heads.txt'), 'w') as f:
-            f.write(index_heads)
+            f.write(self.index_heads)
 
         for filename in os.listdir(self.path_to_index):
             if filename.startswith('__'):
                 os.remove(os.path.join(self.path_to_index, filename))
 
     def write_tokens(self):
+        if len(self.token_map) == 0:
+            return
         formatted_string = '\n'.join(
             tok + ':' + self.token_map[tok] for tok in sorted(self.token_map.keys()))
         with open(self.get_token_filename(self.token_file_count), 'w') as f:
@@ -103,17 +110,22 @@ class InvertedIndex(object):
         self.token_size = 0
 
     def write_titles(self):
-        formatted_string = '\n'.join(self.titles)
+        if len(self.titles) == 0:
+            return
         with open(self.get_title_filename(self.title_file_count), 'w') as f:
-            f.write(formatted_string)
+            f.write(self.titles)
+        with open(self.get_doc_freq_filename(self.title_file_count), 'w') as f:
+            f.write(self.doc_freq)
         self.title_file_count += 1
-        self.titles = []
+        self.title_count = 0
+        self.titles = ""
+        self.doc_freq = ""
 
     def write_indexes(self):
         if len(self.posting) == 0:
             return
         sorted_keys = sorted(self.posting.keys())
-        self.index_heads.append(sorted_keys[0])
+        self.index_heads += sorted_keys[0] + '\n'
         formatted_string = '\n'.join(x + ':' + self.posting[x] for x in sorted_keys)
         with open(self.get_index_filename(self.index_file_count), 'w') as f:
             f.write(formatted_string)
@@ -126,13 +138,15 @@ class InvertedIndex(object):
         self.merge_files()
         self.post_cleanup()
 
-    def add_titles(self, title):
-        self.titles.append(title.strip())
-        if len(self.titles) >= MAX_TITLES:
+    def add_titles(self, title, doc_freq):
+        self.titles += title + '\n'
+        self.doc_freq += str(doc_freq) + '\n'
+        self.title_count += 1
+        if self.title_count >= MAX_TITLES:
             self.write_titles()
 
-    def merge_tokens(self, doc_id, doc_map):
-        # (count, id,  tags)
+    def merge_tokens(self, doc_id, doc_map, title):
+        self.add_titles(title.strip(), sum(x[0] for x in doc_map.values()))
         for tok, val in doc_map.items():
             if tok in self.token_map:
                 z = ' ' + format_tuple(doc_id, val[0], ''.join(set(val[1])))

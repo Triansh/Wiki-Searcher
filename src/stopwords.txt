@@ -66,7 +66,6 @@ behind
 perhaps
 had
 m
-effect
 ti
 needs
 sometimes
@@ -98,13 +97,10 @@ ord
 own
 me
 wherein
-eleven
 miss
 certain
 tq
 doing
-value
-zero
 nobody
 too
 ask
@@ -125,7 +121,6 @@ los
 rr
 ours
 kj
-done
 could
 whereas
 somewhat
@@ -136,7 +131,6 @@ her
 ur
 currently
 above
-followed
 sec
 can
 gr
@@ -596,7 +590,6 @@ iz
 kg
 wasn
 him
-name
 rc
 ab
 el
@@ -614,7 +607,6 @@ become
 xo
 either
 as
-pages
 y2
 shows
 be
@@ -625,8 +617,6 @@ hy
 am
 ps
 example
-twice
-million
 tr
 anybody
 u201d
@@ -659,7 +649,6 @@ aw
 tends
 same
 contains
-mug
 sp
 oa
 shown
@@ -687,7 +676,6 @@ youre
 tm
 uses
 ni
-interest
 i6
 yourself
 ae
@@ -733,7 +721,6 @@ ns
 eq
 ob
 yl
-brief
 shan
 was
 c
@@ -786,7 +773,6 @@ tc
 hi
 pk
 all
-ending
 ex
 thoughh
 two
@@ -806,7 +792,6 @@ forth
 less
 of
 se
-usefully
 ref
 b
 ci
@@ -839,7 +824,6 @@ de
 added
 ox
 seeming
-mainly
 0o
 b1
 biol
@@ -882,7 +866,6 @@ zi
 ay
 i3
 went
-proud
 ey
 part
 keeps
@@ -918,7 +901,6 @@ still
 ao
 rj
 might
-shed
 lets
 seems
 tl
@@ -932,7 +914,6 @@ therefore
 their
 oh
 yes
-old
 dj
 pc
 us
@@ -969,3 +950,4 @@ see
 also
 categori
 infobox
+redirect

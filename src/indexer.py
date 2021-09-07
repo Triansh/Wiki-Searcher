@@ -37,8 +37,7 @@ class WikiParser(xml.sax.handler.ContentHandler):
         if name == 'page':
             self.doc_count += 1
             self.processor.process_doc(self._page)
-            self.indexer.merge_tokens(self.doc_count, self.processor.doc_map)
-            self.indexer.add_titles(self._page['title'])
+            self.indexer.merge_tokens(self.doc_count, self.processor.doc_map, self._page['title'])
             self.processor.reset()
         elif name == 'title' or name == 'text':
             self._page[name] = self._charBuffer.lower()

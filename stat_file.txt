@@ -1,3 +1,7 @@
-477157
-349331
-52612
+
+        Number of total unique tokens: 349331
+        Number of documents: 52612
+        Number of intermediate files: 4
+        Number of index files in index: 5
+        Number of title files in index: 6
+        Total files: 12

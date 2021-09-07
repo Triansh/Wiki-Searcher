@@ -27,6 +27,7 @@ class TextProcessor(object):
 
         self.doc_map = {}
         self.tag = ''
+        self.weights = {'t': 6, 'i': 4, 'c': 2, 'l': 2, 'r': 2, 'b': 1}
 
     def reset(self):
         self.doc_map = {}
@@ -41,7 +42,6 @@ class TextProcessor(object):
         title = doc['title'].strip()
         content = doc['text']
         content = self.ignore_ref_regex.sub(' ', content)
-        # content = self.extract_ref1(content)
         content = self.extract_ref2(content)
         content = self.extract_categories(content)
         content = self.extract_links(content)
@@ -51,9 +51,9 @@ class TextProcessor(object):
         content = self.extract_ref1(content)
         self.cleanup(self.remove_pattern(content), 'b')
 
-    # Extract titles and don't stem it #TODO
+    # Extract titles and don't stem it
     def extract_title(self, title):
-        self.cleanup(title, 't', False)
+        self.cleanup(title, 't')
 
     # Remove infoboxes
     def extract_infobox(self, content):
@@ -118,17 +118,17 @@ class TextProcessor(object):
 
         return self.link_regex.sub(res_sub, content)
 
-    def cleanup(self, content, tag, stem=True):
+    def cleanup(self, content, tag):
 
         term_map = Counter(x for x in self.token_regex.split(content)
                            if len(x) > 1 and x not in self.stop_words)
 
         for token, val in term_map.items():
-            tok = self.stemmer.stemWord(token) if stem else token
+            tok = self.stemmer.stemWord(token)
             if len(tok) > 1 and not tok[:2] == "00" and not (
                     tok[0] in self.digits and len(tok) > 4) and not self.garbage_regex.match(tok):
                 if tok in self.doc_map:
-                    self.doc_map[tok][0] += val
+                    self.doc_map[tok][0] += val * self.weights[tag]
                     self.doc_map[tok][1] += tag
                 else:
-                    self.doc_map[tok] = [val, tag]
+                    self.doc_map[tok] = [val * self.weights[tag], tag]

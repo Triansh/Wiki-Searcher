@@ -3,6 +3,7 @@ import os
 import time
 import xml.sax
 import resource
+from pathlib import Path
 
 from TextProcessor import TextProcessor
 from InvertedIndex import InvertedIndex
@@ -46,13 +47,14 @@ class WikiParser(xml.sax.handler.ContentHandler):
 
     def getResult(self, path_to_wiki_dump):
         self.parser.parse(str(path_to_wiki_dump))
-        stats = f"""
-        Number of total unique tokens: {self.indexer.total_unique_tokens}
-        Number of documents: {self.doc_count}
-        Number of intermediate files: {self.indexer.token_file_count}
-        Number of index files in index: {self.indexer.index_file_count}
-        Number of title files in index: {self.indexer.title_file_count}
-        Total files: {self.indexer.index_file_count + self.indexer.title_file_count + 1}"""
+        time.sleep(2)
+        stats = f"""Size of files: {sum(f.stat().st_size for f in Path(self.indexer.path_to_index).glob('*') if f.is_file()) / (10 ** 9)} GB 
+Number of total unique tokens: {self.indexer.total_unique_tokens}
+Number of documents: {self.doc_count}
+Number of intermediate files: {self.indexer.token_file_count}
+Number of index files in index: {self.indexer.index_file_count}
+Number of title files in index: {self.indexer.title_file_count}
+Total files: {self.indexer.index_file_count + 2 * self.indexer.title_file_count + 1}"""
         with open(self.path_to_stat, 'w') as f:
             f.write(stats)
 

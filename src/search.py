@@ -3,6 +3,7 @@ import pickle
 import re
 import sys
 import time
+from pprint import pprint
 from Stemmer import Stemmer
 
 from Ranker import Ranker
@@ -23,8 +24,6 @@ class QueryProcessor(Ranker):
         with open(os.path.join(self.path_to_index, 'heads.txt'), 'r') as f:
             self.index_heads = [x.rstrip() for x in f.readlines()]
 
-        self.max_file_lines = 10 ** 4
-
         self.curr_query = {}
 
         self.field_regex = re.compile(r"[tbircl]:")
@@ -44,15 +43,16 @@ class QueryProcessor(Ranker):
     # Parsing the query into broken words if the tags they require
     # self.curr_query is of the form {word : tags}
     def extract_words(self):
+        st = time.time()
+
         indices = [x.start() for x in self.field_regex.finditer(self.query_string)]
         if len(indices) > 0:
             if indices[0] != 0: indices = [0] + indices
-            parts = [self.query_string[i:j].strip() for i, j in zip(indices, indices[1:] + [0])]
+            parts = [self.query_string[i:j].strip() for i, j in zip(indices, indices[1:] + [None])]
         else:
             parts = [self.query_string.strip()]
-        # print(parts)
         for q in parts:
-            tag, x = (q[0], q[2:]) if q[1] == ':' else ('bcilrt', q)
+            tag, x = (q[0], q[2:]) if len(q) > 2 and q[1] == ':' else ('bcilrt', q)
             # print(tag, x)
             for y in x.split():
                 if y == '' or y in self.stop_words: continue
@@ -62,6 +62,8 @@ class QueryProcessor(Ranker):
                 else:
                     self.curr_query[y] = tag
         self.curr_query = {k: ''.join(set(v)) for k, v in self.curr_query.items()}
+
+        print("Time taken for word extraction: ", time.time() - st)
         # print(self.curr_query)
 
     # This get all the required data from the index files
@@ -69,6 +71,8 @@ class QueryProcessor(Ranker):
     # word doc map contains the list of doc_id and frequency of the word in that document.
     # Form :- {word : [(frequency, doc_id)]}
     def get_index_data(self):
+        st = time.time()
+
         word_file_map = {}
         for tok, tags in self.curr_query.items():
             file_no = self.search_file(tok)
@@ -76,6 +80,8 @@ class QueryProcessor(Ranker):
                 word_file_map[file_no].add(tok)
             else:
                 word_file_map[file_no] = {tok}
+
+        print(word_file_map)
 
         for file_no, words in word_file_map.items():
             with open(os.path.join(self.path_to_index, f'index_{file_no}.txt'), 'r') as f:
@@ -87,12 +93,16 @@ class QueryProcessor(Ranker):
                              word_docs.items()}
                 self.word_count.update({k: len(v) for k, v in word_docs.items()})
                 self.word_to_doc_map.update(word_docs)
+        # print(self.word_to_doc_map)
+        # print(self.word_count)
+        print("Time taken for getting index data: ", time.time() - st)
 
     # This gets the field length of all the required documents contained in doc_size
     # Form :- {doc_id : doc_size}
     def get_doc_len_data(self):
+        st = time.time()
         doc_ids = set(y[1] for doc in self.word_to_doc_map.values() for y in doc)
-        print(sorted(doc_ids))
+        print(len(doc_ids))
         self.final_score = {x: 0 for x in doc_ids}
         doc_file_map = {}
         for x in doc_ids:
@@ -102,25 +112,28 @@ class QueryProcessor(Ranker):
             else:
                 doc_file_map[q] = {r}
 
-        print(doc_file_map)
+        # print(len(doc_file_map.keys()), xx)
 
         for file_no, lines in doc_file_map.items():
             with open(os.path.join(self.path_to_index, f'freq_{file_no}.txt')) as f:
                 file = f.readlines()
                 self.doc_size.update({(self.max_file_lines * file_no + 1 + line): int(file[line])
                                       for line in lines})
-        print(self.doc_size)
+        # pprint(self.doc_size)
+        print("Time taken for getting doc len data: ", time.time() - st)
 
     def process_query(self):
         self.extract_words()
         self.get_index_data()
         self.get_doc_len_data()
         self.calculate_scores()
+        # print("\nFinal scores: ")
+        # pprint(sorted(self.final_score.items(), key=lambda x: -x[1]))
         self.get_results()
-        print(self.final_score)
         # self.getResults()
 
     def get_results(self):
+        st = time.time()
         file_map, title_map = {}, {}
         for x in self.results:
             q, r = (x - 1) // self.max_file_lines, (x - 1) % self.max_file_lines
@@ -136,7 +149,11 @@ class QueryProcessor(Ranker):
                     {(self.max_file_lines * f_no + 1 + li): file[li].rstrip() for li in lines})
 
         self.results = [(x, title_map[x]) for x in self.results]
-        print('\n'.join(str(x[0]) + ', ' + x[1] for x in self.results))
+
+        print("Time taken for getting title data: ", time.time() - st)
+
+        print("\nResults: ")
+        print('\n'.join(str(x[0]) + ',\t' + x[1] for x in self.results))
 
 
 if __name__ == '__main__':
@@ -145,6 +162,6 @@ if __name__ == '__main__':
     query = sys.argv[2].lower().replace(',', ' ')
     qp = QueryProcessor(path_to_index, query)
     qp.process_query()
-    print("Time taken: ", time.time() - start)
+    print("\nTime taken: ", time.time() - start)
 
     pass

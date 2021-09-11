@@ -3,7 +3,7 @@ import pickle
 import re
 import sys
 import time
-from pprint import pprint
+from linecache import getline, clearcache
 from Stemmer import Stemmer
 
 from Ranker import Ranker
@@ -52,7 +52,7 @@ class QueryProcessor(Ranker):
         else:
             parts = [self.query_string.strip()]
         for q in parts:
-            tag, x = (q[0], q[2:]) if len(q) > 2 and q[1] == ':' else ('bcilrt', q)
+            tag, x = (q[0], q[2:]) if len(q) > 2 and q[1] == ':' else ('e', q)
             # print(tag, x)
             for y in x.split():
                 if y == '' or y in self.stop_words: continue
@@ -61,10 +61,10 @@ class QueryProcessor(Ranker):
                     self.curr_query[y] += tag
                 else:
                     self.curr_query[y] = tag
-        self.curr_query = {k: ''.join(set(v)) for k, v in self.curr_query.items()}
-
+        self.curr_query = {k: ('' if (z := ''.join(set(v))) == 'e' else z.replace('e', '')) for k, v
+                           in self.curr_query.items()}
         print("Time taken for word extraction: ", time.time() - st)
-        # print(self.curr_query)
+        # print(self.curr_query, '\n\n')
 
     # This get all the required data from the index files
     # word count contains in how many documents the word came. Form :- {word : count}
@@ -72,29 +72,46 @@ class QueryProcessor(Ranker):
     # Form :- {word : [(frequency, doc_id)]}
     def get_index_data(self):
         st = time.time()
-
         word_file_map = {}
-        for tok, tags in self.curr_query.items():
+        for tok in self.curr_query.keys():
             file_no = self.search_file(tok)
             if file_no in word_file_map:
                 word_file_map[file_no].add(tok)
             else:
                 word_file_map[file_no] = {tok}
-
         print(word_file_map)
+        print("Time taken for getting search data: ", time.time() - st)
+
+        st = time.time()
 
         for file_no, words in word_file_map.items():
             with open(os.path.join(self.path_to_index, f'index_{file_no}.txt'), 'r') as f:
-                word_docs = {z[0]: [tuple(x.split(',') + ['b'])
-                                    for x in z[1].split()] for x in f.readlines()
-                             if (z := x.split(':') or True) and z[0] in words}
-                word_docs = {k: [(int(x[0]), int(x[1])) for x in v
-                                 if any(z in (x[2] or 'b') for z in self.curr_query[k])] for k, v in
-                             word_docs.items()}
-                self.word_count.update({k: len(v) for k, v in word_docs.items()})
-                self.word_to_doc_map.update(word_docs)
+                max_word = max(words)
+                for line in f:
+                    ind = line.find(':')
+                    if ind == -1: continue
+                    if (w := line[:ind]) > max_word: break
+                    if w in words:
+                        posting = [(*(x.split(',') + ['b'])[:3],) for x in line[(ind + 1):].split()]
+                        self.word_count.update({w: len(posting)})
+                        print(w, len(posting), ":\n", posting, '\n\n', )
+                        posting = [(int(x[0]), int(x[1])) for x in posting if
+                                   all(z in x[2] for z in self.curr_query[w])]
+                        # posting.sort(reverse=True)
+                        # posting = posting[:10000]
+                        self.word_to_doc_map.update({w: posting})
+                        print(w, len(posting), ":\n", posting, '\n\n')
+
+                        # word_docs = {x[:ind]: [(*(x.split(',') + ['b']),)
+                #                        for x in x[(ind + 1):].split()] for x in f.readlines()
+                #              if ((ind := x.find(':')) != -1) and x[:ind] in words}
+                # word_docs = {k: [(int(x[0]), int(x[1])) for x in v
+                #                  if any(z in (x[2] or 'b') for z in self.curr_query[k])] for k, v in
+                #              word_docs.items()}
+                # self.word_count.update({k: len(v) for k, v in word_docs.items()})
+                # self.word_to_doc_map.update(word_docs)
         # print(self.word_to_doc_map)
-        # print(self.word_count)
+        print(self.word_count)
         print("Time taken for getting index data: ", time.time() - st)
 
     # This gets the field length of all the required documents contained in doc_size
@@ -102,7 +119,8 @@ class QueryProcessor(Ranker):
     def get_doc_len_data(self):
         st = time.time()
         doc_ids = set(y[1] for doc in self.word_to_doc_map.values() for y in doc)
-        print(len(doc_ids))
+        max_id = max(doc_ids)
+        print("Total docs found: ", len(doc_ids), " Max doc id: ", max_id)
         self.final_score = {x: 0 for x in doc_ids}
         doc_file_map = {}
         for x in doc_ids:
@@ -112,13 +130,25 @@ class QueryProcessor(Ranker):
             else:
                 doc_file_map[q] = {r}
 
-        # print(len(doc_file_map.keys()), xx)
+        print("Total files need to be opened for getting doc len: ", len(doc_file_map.keys()))
 
         for file_no, lines in doc_file_map.items():
             with open(os.path.join(self.path_to_index, f'freq_{file_no}.txt')) as f:
                 file = f.readlines()
                 self.doc_size.update({(self.max_file_lines * file_no + 1 + line): int(file[line])
                                       for line in lines})
+
+        # self.doc_size.update({(self.max_file_lines * file_no + 1 + line): int(
+        #     getline(os.path.join(self.path_to_index, f'freq_{file_no}.txt'), line + 1).rstrip()) for
+        #                       file_no, lines in doc_file_map.items() for line in sorted(lines)})
+        # f_name = os.path.join(self.path_to_index, 'freqs.txt')
+        # self.doc_size = {x: int(getline(f_name, x - 1).rstrip()) for x in doc_ids}
+        # with open(os.path.join(self.path_to_index, f'freqs.txt'), 'r') as fp:
+        #     for i, line in enumerate(fp):
+        #         if (i + 1) in doc_ids:
+        #             self.doc_size[i + 1] = int(line.rstrip())
+        #         elif i + 1 > max_id:
+        #             break
         # pprint(self.doc_size)
         print("Time taken for getting doc len data: ", time.time() - st)
 
@@ -143,17 +173,18 @@ class QueryProcessor(Ranker):
                 file_map[q] = {r}
 
         for f_no, lines in file_map.items():
-            with open(os.path.join(self.path_to_index, f'title_{f_no}.txt')) as f:
-                file = f.readlines()
-                title_map.update(
-                    {(self.max_file_lines * f_no + 1 + li): file[li].rstrip() for li in lines})
+            f_name = os.path.join(self.path_to_index, f'title_{f_no}.txt')
+            title_map.update(
+                {(self.max_file_lines * f_no + 1 + li): getline(f_name, li).rstrip() for li in
+                 lines})
 
         self.results = [(x, title_map[x]) for x in self.results]
-
         print("Time taken for getting title data: ", time.time() - st)
 
         print("\nResults: ")
-        print('\n'.join(str(x[0]) + ',\t' + x[1] for x in self.results))
+        print(
+            '\n'.join(str(x[0]) + ',\t\t' + x[1] + '\t\t' + str(self.final_score[x[0]]) for x in
+                      self.results))
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ import pickle
 import re
 import sys
 import time
-from linecache import getline, clearcache
+from linecache import getline
 from Stemmer import Stemmer
 
 from Ranker import Ranker
@@ -99,7 +99,7 @@ class QueryProcessor(Ranker):
                                    all(z in x[2] for z in self.curr_query[w])]
                         # posting.sort(reverse=True)
                         # posting = posting[:10000]
-                        self.word_to_doc_map.update({w: posting})
+                        self.all_word_posting.update({w: posting})
                         # print(w, len(posting), ":\n", posting, '\n\n')
 
                         # word_docs = {x[:ind]: [(*(x.split(',') + ['b']),)
@@ -114,57 +114,19 @@ class QueryProcessor(Ranker):
         print(self.word_count)
         print("Time taken for getting index data: ", time.time() - st)
 
-    # This gets the field length of all the required documents contained in doc_size
-    # Form :- {doc_id : doc_size}
-    def get_doc_len_data(self):
-        st = time.time()
-        doc_ids = set(y[1] for doc in self.word_to_doc_map.values() for y in doc)
-        max_id = max(doc_ids)
-        print("Total docs found: ", len(doc_ids), " Max doc id: ", max_id)
-        self.final_score = {x: 0 for x in doc_ids}
-        doc_file_map = {}
-        for x in doc_ids:
-            q, r = x // self.max_file_lines, x % self.max_file_lines
-            if q in doc_file_map:
-                doc_file_map[q].add(r)
-            else:
-                doc_file_map[q] = {r}
-
-        print("Total files need to be opened for getting doc len: ", len(doc_file_map.keys()))
-
-        for file_no, lines in doc_file_map.items():
-            with open(os.path.join(self.path_to_index, f'freq_{file_no}.txt')) as f:
-                file = f.readlines()
-                self.doc_size.update({(self.max_file_lines * file_no + line): int(file[line])
-                                      for line in lines})
-
-        # self.doc_size.update({(self.max_file_lines * file_no + 1 + line): int(
-        #     getline(os.path.join(self.path_to_index, f'freq_{file_no}.txt'), line + 1).rstrip()) for
-        #                       file_no, lines in doc_file_map.items() for line in sorted(lines)})
-        # f_name = os.path.join(self.path_to_index, 'freqs.txt')
-        # self.doc_size = {x: int(getline(f_name, x - 1).rstrip()) for x in doc_ids}
-        # with open(os.path.join(self.path_to_index, f'freqs.txt'), 'r') as fp:
-        #     for i, line in enumerate(fp):
-        #         if (i + 1) in doc_ids:
-        #             self.doc_size[i + 1] = int(line.rstrip())
-        #         elif i + 1 > max_id:
-        #             break
-        # pprint(self.doc_size)
-        print("Time taken for getting doc len data: ", time.time() - st)
-
     def process_query(self):
         self.extract_words()
+        if len(self.curr_query) == 0:
+            print('Results:\nNo documents found')
+            sys.exit()
+
         self.get_index_data()
         if len(self.word_count) == 0:
             print('Results:\nNo documents found')
             sys.exit()
 
-        self.get_doc_len_data()
         self.calculate_scores()
-        # print("\nFinal scores: ")
-        # pprint(sorted(self.final_score.items(), key=lambda x: -x[1]))
         self.get_results()
-        # self.getResults()
 
     def get_results(self):
         st = time.time()
@@ -175,12 +137,6 @@ class QueryProcessor(Ranker):
                 file_map[q].add(r)
             else:
                 file_map[q] = {r}
-
-        # for file_no, lines in file_map.items():
-        #     with open(os.path.join(self.path_to_index, f'title_{file_no}.txt')) as f:
-        #         file = f.readlines()
-        #         title_map.update({(self.max_file_lines * file_no + line): (file[line])
-        #                           for line in lines})
 
         for f_no, lines in file_map.items():
             f_name = os.path.join(self.path_to_index, f'title_{f_no}.txt')

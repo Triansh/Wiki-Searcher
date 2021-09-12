@@ -26,7 +26,7 @@ class TextProcessor(object):
         self.html_regex = re.compile(config.remove_html_regex)
 
         self.doc_map = {}
-        self.weights = {'t': 7, 'i': 3, 'c': 1, 'l': 1, 'r': 1, 'b': 1}
+        self.weights = {'t': 8, 'i': 3, 'c': 2, 'l': 1, 'r': 1, 'b': 1}
         self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
 
     def process_doc(self, doc):
@@ -95,13 +95,11 @@ class TextProcessor(object):
         term_map = Counter(
             (x[:-1] if (x[-1].isnumeric() and not x[-2:].isnumeric()) else x)
             for x in self.token_regex.split(content) if
-            (1 < len(x) <= 15) and x not in self.stop_words)
+            (1 < len(x) <= 20) and x not in self.stop_words)
 
         for token, val in term_map.items():
-            if token[-1].isnumeric() and not token[-2:].isnumeric():
-                token = token[:-1]
             tok = self.stemmer.stemWord(token)
-            if (1 < len(tok) <= 15) and not tok[:2] == "00" and tok not in self.stop_words and not (
+            if (1 < len(tok) <= 20) and not tok[:2] == "00" and tok not in self.stop_words and not (
                     tok[0] in self.digits and len(tok) > 4) and not self.garbage_regex.match(tok):
                 if tok in self.doc_map:
                     self.doc_map[tok][0] += val * self.weights[tag]
@@ -110,4 +108,4 @@ class TextProcessor(object):
                     self.doc_map[tok] = [val * self.weights[tag], tag]
 
     def bad_doc(self):
-        self.doc_map = {tok: [1 + (ct // 2), tags] for tok, (ct, tags) in self.doc_map.items()}
+        self.doc_map = {tok: [1 + (ct // 10), tags] for tok, (ct, tags) in self.doc_map.items()}

@@ -13,5 +13,5 @@ remove_html_regex = r"<[^>]*>"
 attr_regex = r"\w+ *="
 
 MAX_TOKEN_FILE_SIZE = 40 * (10 ** 6)
-MAX_TITLES = 1 * (10 ** 4)
+MAX_TITLES = 5 * (10 ** 3)
 MAX_INDEX_FILE_SIZE = 10 * (10 ** 6)

@@ -13,7 +13,7 @@ class Ranker(object):
         # self.max_file_lines = 10 ** 4
         # Large data
         self.total_docs = 21384756
-        self.avg_doc_len = 6566129638 / self.total_docs
+        self.avg_doc_len = 6538956940 / self.total_docs  # 6566129638
         self.max_file_lines = 10 ** 4
 
         self.idf_scores = {}

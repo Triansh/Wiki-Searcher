@@ -23,112 +23,91 @@ class TextProcessor(object):
         self.garbage_regex = re.compile(config.garbage_regex)
         self.ignore_ref_regex = re.compile(config.ignore_ref_regex)
         self.http_regex = re.compile(config.http_regex)
-        self.attr_regex = re.compile(config.attr_regex)
+        self.html_regex = re.compile(config.remove_html_regex)
 
         self.doc_map = {}
-        self.tag = ''
-        self.weights = {'t': 6, 'i': 4, 'c': 2, 'l': 2, 'r': 2, 'b': 1}
-
-    def reset(self):
-        self.doc_map = {}
-        self.tag = ''
-
-    def remove_pattern(self, content):
-        content = self.http_regex.sub(' ', content)
-        content = self.attr_regex.sub(' ', content)
-        return content
+        self.weights = {'t': 7, 'i': 3, 'c': 1, 'l': 1, 'r': 1, 'b': 1}
+        self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
 
     def process_doc(self, doc):
+        self.doc_map = {}
         title = doc['title'].strip()
         content = doc['text']
         content = self.ignore_ref_regex.sub(' ', content)
-        content = self.extract_ref2(content)
+        content = self.extract_ref_tags(content)
         content = self.extract_categories(content)
-        content = self.extract_links(content)
         content = self.extract_infobox(content)
+        content = self.extract_ref_section(content)
+        content = self.extract_links(content)
+        self.cleanup(content, 'b')
         self.extract_title(title)
-        self.tag = 'b'
-        content = self.extract_ref1(content)
-        self.cleanup(self.remove_pattern(content), 'b')
+        if any(x in title for x in self.bad_title):
+            self.bad_doc()
 
-    # Extract titles and don't stem it
     def extract_title(self, title):
         self.cleanup(title, 't')
 
     # Remove infoboxes
     def extract_infobox(self, content):
-        def res_sub(match_obj):
-            t = self.remove_pattern(match_obj.group(0))
-            self.tag = 'i'
-            t = self.extract_ref1(t)
-            ind = t.find('infobox')
-            self.cleanup(t if ind == -1 else t[(ind + 7):], 'i')
+        def re_sub(match):
+            self.cleanup(match.group(0), 'i')
             return ' '
 
-        return self.infobox_regex.sub(res_sub, content)
+        return self.infobox_regex.sub(re_sub, content)
 
     # Remove Category
     def extract_categories(self, content):
-        def res_sub(match_obj):
-            t = self.remove_pattern(match_obj.group(0))
-            self.tag = 'c'
-            t = self.extract_ref1(t)
-            ind = t.find(':')
-            self.cleanup(t if ind == -1 else t[ind:], 'c')
+        def re_sub(match):
+            self.cleanup(match.group(0), 'c')
             return ' '
 
-        return self.category_regex.sub(res_sub, content)
+        return self.category_regex.sub(re_sub, content)
 
     # Remove reference tags
-    def extract_ref1(self, content):
-        def res_sub(match_obj):
-            t = self.remove_pattern(match_obj.group(0))
-            ind = t.find('>')
-            # print(t)
-            if ind != -1:
-                if 'ref' in t[:ind]:
-                    self.cleanup(t[ind:], 'r')
-                else:
-                    self.cleanup(t[ind:], self.tag)
+    def extract_ref_tags(self, content):
+        def re_sub(match):
+            self.cleanup(match.group(0), 'r')
             return ' '
 
-        return self.ref1_regex.sub(res_sub, content)
+        return self.ref1_regex.sub(re_sub, content)
 
     # Remove references section
-    def extract_ref2(self, content):
-        def res_sub(match_obj):
-            t = self.remove_pattern(match_obj.group(0))
-            self.tag = 'r'
-            t = self.extract_ref1(t)
-            ind = t.find('\n')
-            self.cleanup(t if ind == -1 else t[ind:], 'r')
+    def extract_ref_section(self, content):
+        def re_sub(match):
+            self.cleanup(match.group(0), 'r')
             return ' '
 
-        return self.ref2_regex.sub(res_sub, content)
+        return self.ref2_regex.sub(re_sub, content)
 
     # Remove external links section
     def extract_links(self, content):
-        def res_sub(match_obj):
-            t = self.remove_pattern(match_obj.group(0))
-            self.tag = 'l'
-            t = self.extract_ref1(t)
-            ind = t.find('\n')
-            self.cleanup(t if ind == -1 else t[ind:], 'l')
+        def re_sub(match):
+            self.cleanup(match.group(0), 'l')
             return ' '
 
-        return self.link_regex.sub(res_sub, content)
+        return self.link_regex.sub(re_sub, content)
 
-    def cleanup(self, content, tag):
+    def cleanup(self, ct, tag):
 
-        term_map = Counter(x for x in self.token_regex.split(content)
-                           if len(x) > 1 and x not in self.stop_words)
+        content = self.html_regex.sub(' ', ct)
+        content = self.http_regex.sub(' ', content)
+
+        term_map = Counter(
+            (x[:-1] if (x[-1].isnumeric() and not x[-2:].isnumeric()) else x)
+            for x in self.token_regex.split(content) if
+            (1 < len(x) <= 15) and x not in self.stop_words)
 
         for token, val in term_map.items():
+            if token[-1].isnumeric() and not token[-2:].isnumeric():
+                token = token[:-1]
             tok = self.stemmer.stemWord(token)
-            if len(tok) > 1 and not tok[:2] == "00" and not (
+            if (1 < len(tok) <= 15) and not tok[:2] == "00" and tok not in self.stop_words and not (
                     tok[0] in self.digits and len(tok) > 4) and not self.garbage_regex.match(tok):
                 if tok in self.doc_map:
                     self.doc_map[tok][0] += val * self.weights[tag]
                     self.doc_map[tok][1] += tag
                 else:
                     self.doc_map[tok] = [val * self.weights[tag], tag]
+
+    def bad_doc(self):
+        self.doc_map = {tok: [1 + (ct // 2), tags] for tok, (ct, tags) in self.doc_map.items()}

@@ -94,13 +94,13 @@ class QueryProcessor(Ranker):
                     if w in words:
                         posting = [(*(x.split(',') + ['b'])[:3],) for x in line[(ind + 1):].split()]
                         self.word_count.update({w: len(posting)})
-                        print(w, len(posting), ":\n", posting, '\n\n', )
+                        # print(w, len(posting), ":\n", posting, '\n\n', )
                         posting = [(int(x[0]), int(x[1])) for x in posting if
                                    all(z in x[2] for z in self.curr_query[w])]
                         # posting.sort(reverse=True)
                         # posting = posting[:10000]
                         self.word_to_doc_map.update({w: posting})
-                        print(w, len(posting), ":\n", posting, '\n\n')
+                        # print(w, len(posting), ":\n", posting, '\n\n')
 
                         # word_docs = {x[:ind]: [(*(x.split(',') + ['b']),)
                 #                        for x in x[(ind + 1):].split()] for x in f.readlines()
@@ -124,7 +124,7 @@ class QueryProcessor(Ranker):
         self.final_score = {x: 0 for x in doc_ids}
         doc_file_map = {}
         for x in doc_ids:
-            q, r = (x - 1) // self.max_file_lines, (x - 1) % self.max_file_lines
+            q, r = x // self.max_file_lines, x % self.max_file_lines
             if q in doc_file_map:
                 doc_file_map[q].add(r)
             else:
@@ -135,7 +135,7 @@ class QueryProcessor(Ranker):
         for file_no, lines in doc_file_map.items():
             with open(os.path.join(self.path_to_index, f'freq_{file_no}.txt')) as f:
                 file = f.readlines()
-                self.doc_size.update({(self.max_file_lines * file_no + 1 + line): int(file[line])
+                self.doc_size.update({(self.max_file_lines * file_no + line): int(file[line])
                                       for line in lines})
 
         # self.doc_size.update({(self.max_file_lines * file_no + 1 + line): int(
@@ -155,6 +155,10 @@ class QueryProcessor(Ranker):
     def process_query(self):
         self.extract_words()
         self.get_index_data()
+        if len(self.word_count) == 0:
+            print('Results:\nNo documents found')
+            sys.exit()
+
         self.get_doc_len_data()
         self.calculate_scores()
         # print("\nFinal scores: ")
@@ -166,16 +170,22 @@ class QueryProcessor(Ranker):
         st = time.time()
         file_map, title_map = {}, {}
         for x in self.results:
-            q, r = (x - 1) // self.max_file_lines, (x - 1) % self.max_file_lines
+            q, r = x // self.max_file_lines, x % self.max_file_lines
             if q in file_map:
                 file_map[q].add(r)
             else:
                 file_map[q] = {r}
 
+        # for file_no, lines in file_map.items():
+        #     with open(os.path.join(self.path_to_index, f'title_{file_no}.txt')) as f:
+        #         file = f.readlines()
+        #         title_map.update({(self.max_file_lines * file_no + line): (file[line])
+        #                           for line in lines})
+
         for f_no, lines in file_map.items():
             f_name = os.path.join(self.path_to_index, f'title_{f_no}.txt')
             title_map.update(
-                {(self.max_file_lines * f_no + 1 + li): getline(f_name, li).rstrip() for li in
+                {(self.max_file_lines * f_no + li): getline(f_name, li + 1).rstrip() for li in
                  lines})
 
         self.results = [(x, title_map[x]) for x in self.results]

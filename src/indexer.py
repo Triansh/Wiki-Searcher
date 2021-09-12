@@ -36,10 +36,9 @@ class WikiParser(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if name == 'page':
-            self.doc_count += 1
             self.processor.process_doc(self._page)
             self.indexer.merge_tokens(self.doc_count, self.processor.doc_map, self._page['title'])
-            self.processor.reset()
+            self.doc_count += 1
         elif name == 'title' or name == 'text':
             self._page[name] = self._charBuffer.lower()
         elif name == 'mediawiki':
@@ -47,7 +46,6 @@ class WikiParser(xml.sax.handler.ContentHandler):
 
     def getResult(self, path_to_wiki_dump):
         self.parser.parse(str(path_to_wiki_dump))
-        time.sleep(2)
         stats = f"""Size of files: {sum(f.stat().st_size for f in Path(self.indexer.path_to_index).glob('*') if f.is_file()) / (10 ** 9)} GB 
 Number of total unique tokens: {self.indexer.total_unique_tokens}
 Number of documents: {self.doc_count}

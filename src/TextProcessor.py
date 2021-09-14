@@ -26,8 +26,8 @@ class TextProcessor(object):
         self.html_regex = re.compile(config.remove_html_regex)
 
         self.doc_map = {}
-        self.weights = {'t': 8, 'i': 3, 'c': 2, 'l': 1, 'r': 1, 'b': 1}
-        self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
+        self.weights = {'t': 7, 'i': 3, 'c': 2, 'l': 1, 'r': 1, 'b': 1}
+        # self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
 
     def process_doc(self, doc):
         self.doc_map = {}
@@ -41,8 +41,8 @@ class TextProcessor(object):
         content = self.extract_links(content)
         self.cleanup(content, 'b')
         self.extract_title(title)
-        if any(x in title for x in self.bad_title):
-            self.bad_doc()
+        # if any(x in title for x in self.bad_title):
+        #     self.bad_doc()
 
     def extract_title(self, title):
         self.cleanup(title, 't')
@@ -92,20 +92,18 @@ class TextProcessor(object):
         content = self.html_regex.sub(' ', ct)
         content = self.http_regex.sub(' ', content)
 
-        term_map = Counter(
-            (x[:-1] if (x[-1].isnumeric() and not x[-2:].isnumeric()) else x)
-            for x in self.token_regex.split(content) if
-            (1 < len(x) <= 20) and x not in self.stop_words)
+        term_map = Counter(x for x in self.token_regex.split(content) if
+                           (1 < len(x) <= 20) and x not in self.stop_words)
 
         for token, val in term_map.items():
             tok = self.stemmer.stemWord(token)
             if (1 < len(tok) <= 20) and not tok[:2] == "00" and tok not in self.stop_words and not (
-                    tok[0] in self.digits and len(tok) > 4) and not self.garbage_regex.match(tok):
+                    tok[0] in self.digits and len(tok) > 5) and not self.garbage_regex.match(tok):
                 if tok in self.doc_map:
                     self.doc_map[tok][0] += val * self.weights[tag]
                     self.doc_map[tok][1] += tag
                 else:
                     self.doc_map[tok] = [val * self.weights[tag], tag]
 
-    def bad_doc(self):
-        self.doc_map = {tok: [1 + (ct // 10), tags] for tok, (ct, tags) in self.doc_map.items()}
+    # def bad_doc(self):
+    #     self.doc_map = {tok: [1 + (ct // 10), tags] for tok, (ct, tags) in self.doc_map.items()}

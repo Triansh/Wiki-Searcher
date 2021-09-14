@@ -14,14 +14,14 @@ class Ranker(object):
         # Large data
         self.total_docs = 21384756
         # self.avg_doc_len = 6538956940 / self.total_docs  # 6566129638
-        self.max_file_lines = 10 ** 4
+        self.max_file_lines = 5 * (10 ** 3)
 
         self.idf_scores = {}
         self.word_count = {}
         self.all_word_posting = {}
         self.final_score = {}
         self.results = []
-        self.limit = 10
+        self.limit = 20
 
         self.checker = 0
 
@@ -45,7 +45,7 @@ class Ranker(object):
         print("Time taken for getting tf scores: ", time.time() - st)
 
     def get_score(self, word, doc_id, word_freq):
-        return self.idf_scores[word] * word_freq * (self.k1 + 1) / (word_freq + self.k1)
+        return self.idf_scores[word] * (1 + (word_freq * (self.k1 + 1) / (word_freq + self.k1)))
 
     def get_idf(self, val):
         return log(1 + ((self.total_docs - val + 0.5) / (val + 0.5)))

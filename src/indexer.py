@@ -25,6 +25,8 @@ class WikiParser(xml.sax.handler.ContentHandler):
         self._page = {}
         self.doc_count = 0
 
+        self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
+
     def characters(self, data):
         self._charBuffer += data
 
@@ -36,6 +38,8 @@ class WikiParser(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if name == 'page':
+            if any(self._page['title'].strip().startswith(x) for x in self.bad_title):
+                return
             self.processor.process_doc(self._page)
             self.indexer.merge_tokens(self.doc_count, self.processor.doc_map, self._page['title'])
             self.doc_count += 1

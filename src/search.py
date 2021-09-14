@@ -5,6 +5,7 @@ import sys
 import time
 from linecache import getline
 from Stemmer import Stemmer
+from collections import Counter
 
 from Ranker import Ranker
 
@@ -25,6 +26,7 @@ class QueryProcessor(Ranker):
             self.index_heads = [x.rstrip() for x in f.readlines()]
 
         self.curr_query = {}
+        self.doc_counter = Counter()
 
         self.field_regex = re.compile(r"[tbircl]:")
 
@@ -89,22 +91,25 @@ class QueryProcessor(Ranker):
                 max_word = max(words)
                 for line in f:
                     ind = line.find(':')
-                    if ind == -1: continue
-                    if (w := line[:ind]) > max_word: break
-                    if w in words:
+                    if ind == -1:
+                        continue
+                    elif (w := line[:ind]) > max_word:
+                        break
+                    elif w in words:
                         posting = [(*(x.split(',') + ['b'])[:3],) for x in line[(ind + 1):].split()]
-                        self.word_count.update({w: len(posting)})
-                        # print(w, len(posting), ":\n", posting, '\n\n', )
                         posting = [(int(x[0]), int(x[1])) for x in posting if
                                    all(z in x[2] for z in self.curr_query[w])]
+                        self.doc_counter.update([x[1] for x in posting])
+                        self.word_count.update({w: len(posting)})
+
                         # posting.sort(reverse=True)
                         # posting = posting[:10000]
                         self.all_word_posting.update({w: posting})
                         # print(w, len(posting), ":\n", posting, '\n\n')
 
-                        # word_docs = {x[:ind]: [(*(x.split(',') + ['b']),)
-                #                        for x in x[(ind + 1):].split()] for x in f.readlines()
-                #              if ((ind := x.find(':')) != -1) and x[:ind] in words}
+                # word_docs = {x[:ind]: [(*(x.split(',') + ['b']),)
+                #                for x in x[(ind + 1):].split()] for x in f.readlines()
+                #      if ((ind := x.find(':')) != -1) and x[:ind] in words}
                 # word_docs = {k: [(int(x[0]), int(x[1])) for x in v
                 #                  if any(z in (x[2] or 'b') for z in self.curr_query[k])] for k, v in
                 #              word_docs.items()}
@@ -112,17 +117,18 @@ class QueryProcessor(Ranker):
                 # self.word_to_doc_map.update(word_docs)
         # print(self.word_to_doc_map)
         print(self.word_count)
+        print("Number of documents found: ", len(self.doc_counter))
         print("Time taken for getting index data: ", time.time() - st)
 
     def process_query(self):
         self.extract_words()
         if len(self.curr_query) == 0:
-            print('Results:\nNo documents found')
+            print('Results:\nNo relevant documents found')
             sys.exit()
 
         self.get_index_data()
         if len(self.word_count) == 0:
-            print('Results:\nNo documents found')
+            print('Results:\nNo relevant documents found')
             sys.exit()
 
         self.calculate_scores()

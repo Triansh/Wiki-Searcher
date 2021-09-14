@@ -14,7 +14,7 @@ class Ranker(object):
         # Large data
         self.total_docs = 21384756
         # self.avg_doc_len = 6538956940 / self.total_docs  # 6566129638
-        self.max_file_lines = 5 * (10 ** 3)
+        self.max_file_lines = 1 * (10 ** 4)
 
         self.idf_scores = {}
         self.word_count = {}

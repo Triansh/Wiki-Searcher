@@ -146,7 +146,7 @@ class InvertedIndex(object):
             self.write_titles()
 
     def merge_tokens(self, doc_id, doc_map, title):
-        self.add_titles(title.strip(), sum(x[0] for x in doc_map.values()))
+        self.add_titles(title.strip(), sum(ct for tok, (ct, tags) in doc_map.items()))
         for tok, val in doc_map.items():
             if tok in self.token_map:
                 z = ' ' + format_tuple(doc_id, val[0], ''.join(set(val[1])))

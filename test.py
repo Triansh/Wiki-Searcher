@@ -19,6 +19,7 @@ import sys
 
 from Stemmer import Stemmer
 from pathlib import Path
+
 #
 # s = Stemmer('english')
 # L = ['infobox', 'name', 'image']
@@ -39,17 +40,17 @@ from pathlib import Path
 # path = sys.argv[1]
 # x = sum(f.stat().st_size for f in Path(path).glob('*') if f.is_file()) / (10 ** 9)
 # print(x)
-token = 'name2'
-if token[-1].isnumeric() and not token[-2:].isnumeric():
-    token = token[:-1]
-print(token)
-# path = "/home/triansh/Desktop/IRE/Wiki-Searcher/indexes"
-# su = 0
-# for filename in os.listdir(path):
-#     if filename.startswith('freq_'):
-#         with open(os.path.join(path, filename), 'r') as f:
-#             su += sum(int(x.strip()) for x in f.readlines() if x.strip() != '')
-# print(su)
+# token = 'name2'
+# if token[-1].isnumeric() and not token[-2:].isnumeric():
+#     token = token[:-1]
+# print(token)
+path = "/media/triansh/Seagate Expansion Drive/Wikipedia/indexes_3-1-1_no_wiki"
+su = 0
+for filename in os.listdir(path):
+    if filename.startswith('freq_'):
+        with open(os.path.join(path, filename), 'r') as f:
+            su += sum(int(x.strip()) for x in f.readlines() if x.strip() != '')
+print(su)
 
 # path = sys.argv[1]
 # f_path = sys.argv[2]

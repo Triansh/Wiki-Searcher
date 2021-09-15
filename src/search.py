@@ -11,21 +11,19 @@ from Ranker import Ranker
 
 class QueryProcessor(Ranker):
 
-    def __init__(self, path_to_index_dir, query_string):
+    def __init__(self, path_to_index_dir):
 
         super().__init__()
         self.stemmer = Stemmer('english')
         with open(os.path.join(os.getcwd(), 'src/stopwords.pkl'), 'rb') as f:
             self.stop_words = set(pickle.load(f))
 
-        self.query_string = query_string.strip()
-
         self.path_to_index = os.path.join(os.getcwd(), path_to_index_dir)
         with open(os.path.join(self.path_to_index, 'heads.txt'), 'r') as f:
             self.index_heads = [x.rstrip() for x in f.readlines()]
 
         self.curr_query = {}
-
+        self.query_string = ''
         self.field_regex = re.compile(r"[tbircl]:")
 
     # Binary search on index heads to to get the file no.
@@ -152,13 +150,16 @@ class QueryProcessor(Ranker):
         # pprint(self.doc_size)
         print("Time taken for getting doc len data: ", time.time() - st)
 
-    def process_query(self):
+    def process_query(self, query_string):
+        self.query_string = query_string
         self.extract_words()
+        if len(self.curr_query) == 0:
+            print('Results:\nNo documents found')
+            return
         self.get_index_data()
         if len(self.word_count) == 0:
             print('Results:\nNo documents found')
-            sys.exit()
-
+            return
         self.get_doc_len_data()
         self.calculate_scores()
         # print("\nFinal scores: ")
@@ -198,11 +199,16 @@ class QueryProcessor(Ranker):
 
 
 if __name__ == '__main__':
-    start = time.time()
+    tt = time.time()
     path_to_index = sys.argv[1]
-    query = sys.argv[2].lower().replace(',', ' ')
-    qp = QueryProcessor(path_to_index, query)
-    qp.process_query()
-    print("\nTime taken: ", time.time() - start)
+    path_to_query = sys.argv[2]
+    qp = QueryProcessor(path_to_index)
+    with open(os.path.join(os.getcwd(), path_to_query), 'r') as f:
+        for line in f:
+            start = time.time()
+            qry = line.lower().replace(',', ' ').strip()
+            qp.process_query(qry)
+            print("Time taken: ", time.time() - start)
+            print()
 
-    pass
+    print("Total time taken: ", time.time())

@@ -165,6 +165,6 @@ if __name__ == '__main__':
             qp.final_result += f"\nTime taken: {time.time() - start}\n\n"
             print()
 
-    with open(os.path.join(os.getcwd(), 'queries_op1.txt'), 'w') as f:
+    with open(os.path.join(os.getcwd(), 'queries_op.txt'), 'w') as f:
         f.write(qp.final_result)
     print("Total time taken: ", time.time() - tt)

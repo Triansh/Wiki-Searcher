@@ -1,6 +1,9 @@
 # Wiki-Searcher
 
-A search engine trained from a corpus of wikipedia articles to provide efficient query results.
+A search engine trained from a corpus of wikipedia articles to provide efficient query results. The
+wikipedia dump comprised of approximately 80 GBs of documents. The index size ws ~17.5 GBs which was
+divided into nearly 4000 files containing of indexes, titles, and document frequencies. The index
+files contains ~10 million tokens from the corpus.
 
 ## Installation
 
@@ -16,62 +19,56 @@ $ pip install -r requirements.txt
 * To create the index, run the following commands. It requires the path to the dump which needs to
   be indexed, the path to directory where index is created and the path were statistics file will be
   written.
+
 ```shell
-$ bash index.sh <path_to_dump> <path_to_inverted_index_directory> <path_to_stat_file>
+$ bash index.sh <path_to_dump> <path_to_index_directory> <path_to_stat_file>
 ```
-* To create the index run, the following commands. It requires the path to the dump which needs to
-  be indexed, the path to directory where index is created and the path were statistics file will be
-  written.
+
+* For searching, place the queries in queries.txt file present in the directory from the script is
+  executed. The argument taken by script is the path where index is stored.
+
 ```shell
-$ bash search.sh <path_to_inverted_index_directory> <query_file_path>
+$ bash search.sh <path_to_index_directory> 
 ```
 
-[comment]: <> (***Anykind of spacing in these***)
+## Procedure
 
-[comment]: <> (```angular2html)
+### Method for indexing
 
-[comment]: <> (Title)
+Files responsible for indexing
 
-[comment]: <> (<page>)
+1. `indexer.py`: Responsible for XML parsing
+2. `TextProcessor.py`: Responsible for text processing
+3. `InvertedInder.py`: Responsible for creating index files and performing merge sort
 
-[comment]: <> (    <title></title>)
+<hr/>
 
-[comment]: <> (</page>)
+Indexing is done in the following steps
 
-[comment]: <> (```)
+* XML Parsing of dump
+* Text Processing of documents
+    * Field Extraction
+    * Tokenization
+    * Stop words removal
+    * Stemming
+* The specific number of tokens from a set of documents are stored with fields and frequency among
+  various files
+* Merge sort is performed to merge and sort the tokens alphabetically and are distributed in files.
 
-[comment]: <> (```angular2html)
+### Method for searching
 
-[comment]: <> (Infobox)
+Files responsible for searching
 
-[comment]: <> ({{Infobox)
+1. `search.py`: Responsible for query processing and loading of index and titles
+2. `Ranker.py`: Responsible for ranking and scoring using BM25
 
-[comment]: <> (```)
+<hr/>
 
-[comment]: <> (```angular2html)
+Searching is done in the following steps
 
-[comment]: <> (References)
-
-[comment]: <> (==References==)
-
-[comment]: <> (== References ==)
-
-[comment]: <> (```)
-
-[comment]: <> (```angular2html)
-
-[comment]: <> (Category)
-
-[comment]: <> ([[Category)
-
-[comment]: <> (```)
-
-[comment]: <> (```angular2html)
-
-[comment]: <> (Links)
-
-[comment]: <> (== External links ==)
-
-[comment]: <> (== links == )
-
-```
+* Data loading and Query parsing
+* Word and field extraction
+* Retrieval of posting list from index and filtering based on fields
+* Scoring documents using BM25 algorithm
+* Ranking based on score
+* Retriving titles of highly scored documents

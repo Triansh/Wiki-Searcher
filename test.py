@@ -16,8 +16,10 @@
 import pickle
 import os
 import sys
+import time
+from collections import Counter
 
-from Stemmer import Stemmer
+# from Stemmer import Stemmer
 from pathlib import Path
 
 #
@@ -45,13 +47,24 @@ from pathlib import Path
 #     token = token[:-1]
 # print(token)
 path = "/media/triansh/Seagate Expansion Drive/Wikipedia/indexes_3-1-1_no_wiki"
-su = 0
-for filename in os.listdir(path):
-    if filename.startswith('freq_'):
-        with open(os.path.join(path, filename), 'r') as f:
-            su += sum(int(x.strip()) for x in f.readlines() if x.strip() != '')
-print(su)
-
+# su = 0
+# for filename in os.listdir(path):
+#     if filename.startswith('freq_'):
+#         with open(os.path.join(path, filename), 'r') as f:
+#             su += sum(int(x.strip()) for x in f.readlines() if x.strip() != '')
+# print(su)
+al = []
+t = time.time()
+for i in range(1631):
+    with open(os.path.join(path, f'freq_{i}.txt'), 'r') as f:
+        al += [max(1500, int(x.rstrip())) for x in f.readlines() if x.strip() != '']
+# print("size of list: ", sys.getsizeof(al), str(al.__sizeof__()), "bytes and length is: ", len(al))
+# print(sum(1 if x < 50 else 0 for x in al) ,' <----')
+al = sorted(al)  # [int(len(al) * .7):]
+print("Median: ", al[int(len(al) * .9999)])
+print("Mean: ", sum(al) / len(al))
+print("Mode: ", Counter(al).most_common(1))
+print("Time: ", time.time() - t)
 # path = sys.argv[1]
 # f_path = sys.argv[2]
 # size = 10 ** 4

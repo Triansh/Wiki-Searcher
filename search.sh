@@ -5,4 +5,4 @@
 ##   echo $query
 #  python src/search.py ./indexes $query
 #done
-python src/search.py "$1" "queries.txt" > "queries_op.txt"
+python src/search.py "$1" "queries.txt"

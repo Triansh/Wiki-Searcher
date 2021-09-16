@@ -26,7 +26,7 @@ class TextProcessor(object):
         self.html_regex = re.compile(config.remove_html_regex)
 
         self.doc_map = {}
-        self.weights = {'t': 3, 'i': 1, 'c': 1, 'l': 1, 'r': 1, 'b': 1}
+        self.weights = {'t': 5, 'i': 3, 'c': 2, 'l': 1, 'r': 1, 'b': 1}
         # self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
 
     def process_doc(self, doc):

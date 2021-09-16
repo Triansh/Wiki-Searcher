@@ -1,0 +1,288 @@
+192137,  billie jean
+8000521,  list of cover versions of michael jackson songs
+1593072,  dangerous world tour
+1232870,  list of michael jackson records and achievements
+5242570,  king of pop (album)
+5242918,  thriller 25
+8610800,  immortal megamix
+1097275,  who is it (michael jackson song)
+8528564,  immortal (michael jackson album)
+809545,  the jacksons: an american dream
+4747245,  do it again medley with billie jean
+2654655,  michael jackson: 30th anniversary celebration
+2614279,  number ones (video)
+7853539,  hollywood tonight
+8929571,  if you'd only believe
+937432,  the ultimate collection (michael jackson album)
+Time taken: 3.0854713916778564
+
+509728,  taskmaster (character)
+588284,  power pack
+9265729,  marvel now!
+288478,  new mutants
+511872,  moon knight
+1655070,  acts of vengeance
+1509623,  phantom eagle
+644113,  epic illustrated
+4876372,  super-villain team-up
+331612,  the tomb of dracula
+13496,  marvel universe
+262801,  dazzler (marvel comics)
+1156149,  ronin (marvel comics)
+2899366,  union jack (joseph chapman)
+7446672,  chaos war
+7237375,  silver surfer
+Time taken: 1.3807950019836426
+
+594862,  allan pettersson
+2476641,  allan rune pettersson
+4920157,  pettersson
+3089296,  frankenstein's aunt (novel)
+3089311,  frankenstein's aunt returns
+2101760,  frankenstein's aunt
+12373480,  stånga games
+11014562,  list of family relations in allsvenskan
+11254280,  list of djurgårdens if fotboll players (1–24 appearances)
+13568398,  list of swedish bandy championship finals (1950–1999)
+554764,  bengt hallberg
+13569628,  list of bandy players awarded stora grabbars och tjejers märke
+2573267,  sweden at the 1952 summer olympics
+11174195,  list of former members of the riksdag
+5235784,  list of swedish olympic medalists
+14689921,  swedish men's curling championship
+Time taken: 0.23904085159301758
+
+358086,  angus maclean
+1851570,  james lee (canadian politician)
+7111628,  phillip lee (politician)
+891600,  james robertson justice
+14930931,  james sunderland (politician)
+708725,  macgyver
+202659,  james hamilton, 4th duke of hamilton
+15597830,  james lawson (minister)
+1796548,  mr. mystery
+14675933,  lee cain
+1297782,  james graham, 6th duke of montrose
+8368246,  burning of edinburgh
+3314648,  kate leigh
+11411348,  ranil jayawardena
+11564733,  philippa roe, baroness couttie
+11244099,  of course he's dead
+Time taken: 1.1109445095062256
+
+335151,  uss conolly
+6047959,  richard l. conolly
+8940799,  conolly
+862332,  list of united states navy ships: c
+265484,  list of destroyers of the united states navy
+144606,  ingalls shipbuilding
+15104570,  central marianas naval order of battle
+15103923,  invasion of leyte naval order of battle
+2301202,  operation sharp guard
+5828436,  richard g. colbert
+978834,  scott fry
+15316332,  carleton f. bryant
+9020168,  donald b. beary
+9484319,  wilder d. baker
+4220403,  destroyer squadron 23
+12168332,  uss conolly (dd-979)
+Time taken: 0.1884315013885498
+
+7197461,  harry potter and the deathly hallows – part 1 (video game)
+367401,  all hallows college
+3127584,  all hallows high school
+5262347,  hallow, worcestershire
+15437916,  sleepy hallow
+1380411,  music of the harry potter films
+2452454,  all hallows' school
+8233703,  production of harry potter and the deathly hallows
+11321848,  the hallow
+1454995,  all hallows
+8248407,  harry potter and the deathly hallows – part 2 (video game)
+6631115,  all hallows, twickenham
+3853750,  all hallows lombard street
+11664902,  hallowing run
+2853217,  all-hallows-the-great
+10702417,  all hallows' eve (2013 film)
+Time taken: 0.031638145446777344
+
+13487781,  2017–18 premier badminton league
+16191898,  draft:master the blaster
+15843875,  history of kerala blasters fc
+10971671,  2014 kerala blasters fc season
+16126288,  vaathi coming
+10060592,  bengaluru raptors
+15131238,  master (soundtrack)
+16191725,  draft:kutti story
+14963095,  master (2021 film)
+38053,  sachin tendulkar
+9454232,  premier badminton league
+14153873,  2018–19 premier badminton league
+6496756,  nimmagadda prasad
+15589588,  draft:paulius ragauskas
+435355,  david james (footballer, born 1970)
+13827736,  2018 in indian sport
+Time taken: 2.0202066898345947
+
+18662,  speed of light
+6605789,  rømer's determination of the speed of light
+6494285,  one-way speed of light
+18672,  speed
+684211,  variable speed of light
+4949013,  light front quantization
+11278167,  bentley exp 10 speed 6
+8937659,  measurements of neutrino speed
+13274777,  bentley exp 12 speed 6e
+1286727,  corpuscular theory of light
+7110,  faster-than-light
+10368383,  a slower speed of light
+505595,  tired light
+3908562,  speed of gravity
+4141968,  speed of light (disambiguation)
+6549511,  the sound the speed the light
+Time taken: 0.909060001373291
+
+14989909,  weapons of the first indochina war
+4064136,  the capture (film)
+13458988,  ss russell sage
+8378408,  battle of chamdo
+12549769,  battle of pyongyang (1950)
+5680808,  battle of sariwon
+5317682,  usns short splice (t-ak-249)
+13427766,  ss laura bridgman
+7655431,  apra coup d'état
+13503632,  ss j. h. drummond
+7298980,  hill 303 massacre
+13232687,  alauddin khalji's conquest of devagiri
+6413171,  battle of chongju (1950)
+12823645,  british tar (1797 ship)
+6573182,  list of historic aircraft of the people's liberation army air force
+812005,  list of single-ship actions
+Time taken: 1.26800537109375
+
+5572588,  tom birdseye
+666427,  clarence birdseye
+75962,  birdseye, indiana
+4168496,  birdseye, utah
+14535121,  sylvia birdseye
+3438046,  victory birdseye
+1814906,  black tarantula
+817399,  birdseye
+5117599,  tarantula
+10966242,  hemipepsis ustulata
+1447931,  captain birdseye
+1660128,  tarantula (disambiguation)
+199917,  tarantula nebula
+712414,  tarantula (dc comics)
+5241021,  cobblestone farmhouse at 1229 birdsey road
+1587461,  tarantula (marvel comics)
+Time taken: 0.052820444107055664
+
+15931865,  lucifer morningstar
+800960,  devil dinosaur
+13259232,  moon girl (marvel comics)
+1483666,  devil in the arts and popular culture
+240350,  the devil in miss jones
+1648843,  the devil bat
+1014851,  the devil's rejects
+2483185,  duke blue devils football
+15324830,  history of duke blue devils football
+730591,  the devil and miss jones
+8215688,  shilpa ray
+146488,  lucifer (dc comics)
+12723599,  list of lucifer characters
+3396939,  simon burke
+1645271,  tommy raudonikis
+120705,  tom conti
+Time taken: 1.2231013774871826
+
+14391228,  list of managers at the fifa world cup
+1554401,  list of fifa world cup records and statistics
+14631796,  england at the fifa women's world cup
+7223872,  african nations at the fifa world cup
+14648600,  china at the fifa women's world cup
+14648624,  brazil at the fifa women's world cup
+7068,  fifa world cup
+3859604,  bettina wiegmann
+9744763,  oceanian nations at the fifa world cup
+7230821,  2010 fifa world cup statistics
+1178175,  1990 fifa world cup qualification
+12039541,  brazil–italy football rivalry
+165031,  fifa women's world cup
+1157295,  1982 fifa world cup qualification
+10798141,  2002 fifa world cup statistics
+14635544,  netherlands at the fifa women's world cup
+Time taken: 4.265453338623047
+
+15933788,  draft:colonial rule in india - a chronology
+8342299,  first nehru ministry
+788915,  indian independence act 1947
+1465965,  dominion of india
+1189918,  independence day (india)
+14924464,  draft:jawaharlal nehru in politics, 1945–1947
+1575112,  dominion of pakistan
+14635458,  1947 north-west frontier province referendum
+7042380,  francis mudie
+177853,  governor-general of india
+3529238,  star of india (flag)
+15247358,  n. c. rawlley
+13226396,  indian 1-rupee coin
+11428784,  august 1947
+12308953,  union government ministries of india
+263865,  1947 in india
+Time taken: 11.03397822380066
+
+16138901,  draft:co2 meter (business)
+14808109,  afşin-elbistan c power station
+3808630,  electricity sector in colombia
+9707410,  5052 aluminium alloy
+2654306,  6063 aluminium alloy
+193430,  sodium–potassium alloy
+2588193,  6061 aluminium alloy
+14976490,  2218 aluminium alloy
+13962038,  7022 aluminium alloy
+11096328,  2219 aluminium alloy
+9978660,  lint (material)
+9768990,  dobby (cloth)
+8492357,  russet (cloth)
+5340583,  charvet (fabric)
+2588238,  7075 aluminium alloy
+2073364,  chrisom
+Time taken: 0.4941291809082031
+
+14413115,  pink rickshaw
+12148655,  pink (2016 film)
+11472727,  miss earth india
+6353061,  st. anselm's pink city sr. sec. school, jaipur
+7162093,  azadpur metro station
+9648071,  india's best dramebaaz
+10374148,  2014 in indian sports
+148535,  pink
+10814376,  jaipur pink panthers
+13001128,  anwesh sahoo
+9439468,  list of city and town nicknames in india
+5777650,  pink chaddi campaign
+7509168,  ina metro station
+6673608,  rani chennamma express
+8328811,  pink line (jaipur metro)
+119527,  jaipur
+Time taken: 7.0095860958099365
+
+11706325,  whisker haven
+14427387,  list of fictional princes
+15102290,  list of disney's tangled characters
+284236,  house of sand and fog (film)
+2203918,  prince of persia: the sands of time (film)
+10073849,  manal naharam
+7994543,  layla and majnun
+5224800,  sand
+5369179,  shlomo sand
+1417998,  prince (prince of persia)
+4184612,  molly sandén
+14361866,  when the moon was full
+722386,  cinema of iran
+579807,  rika matsumoto
+192594,  oil sands
+7683802,  khaddama
+Time taken: 2.9399542808532715
+

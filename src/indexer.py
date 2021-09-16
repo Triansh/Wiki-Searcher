@@ -25,7 +25,7 @@ class WikiParser(xml.sax.handler.ContentHandler):
         self._page = {}
         self.doc_count = 0
 
-        self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
+        self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:', 'help:', 'portal:'}
 
     def characters(self, data):
         self._charBuffer += data

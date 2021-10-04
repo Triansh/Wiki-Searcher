@@ -9,8 +9,6 @@ ignore_ref_regex = r"<(?!>/).*?/>"
 garbage_regex = r"([0-9]+[a-z]+[0-9a-z]+)|([a-z]+[0-9]+[0-9a-z]+)"
 http_regex = r"(https?://|www.)[^(\s|\||})]+"
 remove_html_regex = r"<[^>]*>"
-# attr_regex = r"(\w+ )*?\w+ *="
-# attr_regex = r"\w+ *="
 
 MAX_TOKEN_FILE_SIZE = 80 * (10 ** 6)
 MAX_TITLES = 1 * (10 ** 4)

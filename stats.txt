@@ -1,4 +1,3 @@
-Size of index: 17.726284169 GB
-Total files in index: 4619
-Total tokens in index: 10175177
-
+Size of index: 17.75524006 GB
+Total files in index: 4620
+Total tokens in index: 10175175

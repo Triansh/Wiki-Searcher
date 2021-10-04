@@ -132,6 +132,6 @@ dmypy.json
 .idea/
 data/
 transfer.sh
-indexes
+indexes*
 output.json
 st_*

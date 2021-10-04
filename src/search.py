@@ -30,7 +30,6 @@ class QueryProcessor(Ranker):
                 sum((1 if x.startswith('freq_') else 0) for x in os.listdir(self.path_to_index))):
             with open(os.path.join(self.path_to_index, f'freq_{i}.txt'), 'r') as f:
                 self.doc_size += [int(z) for x in f if (z := x.rstrip()) != '']
-        print(len(self.doc_size))
 
         self.field_regex = re.compile(r"[tbircl]:")
 
@@ -77,7 +76,6 @@ class QueryProcessor(Ranker):
     # word doc map contains the list of doc_id and frequency of the word in that document.
     # Form :- {word : [(frequency, doc_id)]}
     def get_index_data(self):
-        st = time.time()
         word_file_map = {}
         for tok in self.curr_query.keys():
             file_no = self.search_file(tok)
@@ -85,10 +83,6 @@ class QueryProcessor(Ranker):
                 word_file_map[file_no].add(tok)
             else:
                 word_file_map[file_no] = {tok}
-        print(word_file_map)
-        print("Time taken for getting search data: ", time.time() - st)
-
-        st = time.time()
 
         for file_no, words in word_file_map.items():
             max_word = max(words)
@@ -102,12 +96,13 @@ class QueryProcessor(Ranker):
                     elif w in words:
                         posting = [(*(x.split(',') + ['b'])[:3],) for x in line[(ind + 1):].split()]
                         posting = [(int(x[0]), int(x[1])) for x in posting if
+                                   self.doc_size[int(x[1])] > 400 and
                                    all(z in x[2] for z in self.curr_query[w])]
                         self.doc_counter.update(x[1] for x in posting)
                         self.word_count.update({w: len(posting)})
                         self.all_word_posting.update({w: posting})
 
-        print("Time taken for getting index data: ", time.time() - st)
+        # print("Time taken for getting index data: ", time.time() - st)
 
     def process_query(self, query_string):
         self.query_string = query_string
@@ -124,7 +119,6 @@ class QueryProcessor(Ranker):
         self.get_results()
 
     def get_results(self):
-        st = time.time()
         file_map, title_map = {}, {}
         for x in self.results:
             q, r = x // self.max_file_lines, x % self.max_file_lines
@@ -143,28 +137,21 @@ class QueryProcessor(Ranker):
                         title_map[self.max_file_lines * f_no + i] = line.rstrip()
                         curr += 1
 
-        print("Time taken for getting title data: ", time.time() - st)
-
-        # print("\nResults: ")
-        # self.final_result += '\n'.join(
-        #     f"{x},  {title_map[x]},  ({self.doc_size[x]}, {self.final_score[x]})" for x in
-        #     self.results)
         self.final_result += '\n'.join(f"{x},  {title_map[x]}" for x in self.results)
 
 
 if __name__ == '__main__':
-    tt = time.time()
     path_to_index = sys.argv[1]
     path_to_query = sys.argv[2]
     qp = QueryProcessor(path_to_index)
+    tt = time.time()
     with open(os.path.join(os.getcwd(), path_to_query), 'r') as f:
         for line in f:
             start = time.time()
             qry = line.lower().replace(',', ' ').strip()
             qp.process_query(qry)
             qp.final_result += f"\nTime taken: {time.time() - start}\n\n"
-            print()
 
+    print("Total time taken: ", time.time() - tt)
     with open(os.path.join(os.getcwd(), 'queries_op.txt'), 'w') as f:
         f.write(qp.final_result)
-    print("Total time taken: ", time.time() - tt)

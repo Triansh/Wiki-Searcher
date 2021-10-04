@@ -1,0 +1,120 @@
+175734,  roger federer
+996438,  tommy robredo
+6896646,  2007 roger federer tennis season
+4160984,  grigor dimitrov
+884500,  richard gasquet
+118422,  steffi graf
+3064130,  hsieh su-wei
+247787,  darts
+12111411,  deaths in august 2000
+15112126,  2021 in the united states
+Time taken: 10.186680316925049
+
+2247927,  list of phylogenetics software
+2486714,  bayesian inference in phylogeny
+65690,  hidden markov model
+961326,  substitution model
+1739821,  m-estimator
+479404,  baum–welch algorithm
+32576,  bayesian inference
+9398850,  t-rex (webserver)
+261711,  item response theory
+3506145,  approximate bayesian computation
+Time taken: 3.459414005279541
+
+8434532,  before i go to sleep
+7937148,  jane wilson-howarth
+77520,  matthew arnold
+212843,  william le queux
+394725,  harry potter and the philosopher's stone (film)
+1193190,  arden of faversham
+13673973,  rhys ford
+10408942,  j.t. ellison
+999951,  what ever happened to...
+2928701,  rosemary harris (writer)
+Time taken: 2.6037895679473877
+
+13912279,  electoral districts of sri lanka (1947–1989)
+3278171,  1947 vfl season
+15933788,  draft:colonial rule in india - a chronology
+3994124,  1947 pittsburgh pirates season
+11402132,  1947 wanfl season
+8342299,  first nehru ministry
+6053879,  type c escort ship
+11455154,  list of earthquakes in 1947
+9660965,  hobson plan
+1189918,  independence day (india)
+Time taken: 9.03053069114685
+
+194061,  natural-language generation
+3823125,  speech-generating device
+13962,  natural language processing
+1641041,  user-generated content
+15655276,  gpt-2
+13431310,  algorithmic bias
+1679167,  generation z
+11526594,  list of google april fools' day jokes
+12229322,  glossary of artificial intelligence
+6060904,  referring expression generation
+Time taken: 7.154068231582642
+
+15672,  pride and prejudice
+5938719,  pride and prejudice and zombies
+570164,  pride and prejudice (1995 tv series)
+9285517,  the lizzie bennet diaries
+11342923,  george wickham
+5764326,  john willoughby
+17918,  sense and sensibility
+104223,  sense and sensibility (film)
+9226321,  sense and sensibility (2008 tv series)
+6369502,  sense and sensibility and sea monsters
+Time taken: 1.086174726486206
+
+138520,  hamiltonian mechanics
+6237272,  lagrangian mechanics
+10073,  john von neumann
+278587,  20000 varuna
+4759063,  classical mechanics (goldstein)
+22081,  zhang heng
+218641,  pierre-simon laplace
+19139,  skylab
+499675,  rotation matrix
+12187,  mass
+Time taken: 3.3212943077087402
+
+538174,  green chemistry
+266669,  american chemical society
+2703298,  willard gibbs award
+1570376,  list of chemistry journals
+11765393,  emily a. carter
+14977674,  list of chemistry awards
+11959177,  list of american chemical society national awards
+684277,  sonogashira coupling
+52517,  list of chemists
+5272511,  abiogenesis
+Time taken: 2.160721778869629
+
+324493,  shoaib akhtar
+518321,  waqar younis
+9803136,  subak raftar express
+9448693,  pakistan express
+12961977,  mehr express
+4776341,  daewoo express
+9237946,  tezgam
+11660541,  2015–16 national t20 cup
+8425077,  2012 super 8 twenty20 cup
+10462765,  2013–14 national t20 cup
+Time taken: 0.6243255138397217
+
+13487781,  2017–18 premier badminton league
+16191898,  draft:master the blaster
+38053,  sachin tendulkar
+15131238,  master (soundtrack)
+10060592,  bengaluru raptors
+9454232,  premier badminton league
+247587,  sanath jayasuriya
+16126288,  vaathi coming
+1288852,  list of nicknames used in cricket
+16191725,  draft:kutti story
+Time taken: 2.324735403060913
+

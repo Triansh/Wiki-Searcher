@@ -1,9 +1,9 @@
 # Wiki-Searcher
 
-A search engine trained from a corpus of wikipedia articles to provide efficient query results. The
-wikipedia dump comprised of approximately 80 GBs of documents. The index size ws ~17.5 GBs which was
-divided into nearly 4000 files containing of indexes, titles, and document frequencies. The index
-files contains ~10 million tokens from the corpus.
+Wiki-Searcher is a search engine trained from a corpus of wikipedia articles to provide efficient
+query results. The wikipedia dump comprised of nearly 20 million documents which corresponds to
+approximately 80 GBs of data. The size of the created inverted index was ~17.5 GBs which was divided
+into 3000 files containing indexes and titles. The index had ~10 million tokens from the corpus.
 
 ## Installation
 
@@ -66,7 +66,7 @@ Files responsible for searching
 
 Searching is done in the following steps
 
-* Data loading and Query parsing
+* Data (Frequencey of documents) loading and Query parsing
 * Word and field extraction
 * Retrieval of posting list from index and filtering based on fields
 * Scoring documents using BM25 algorithm

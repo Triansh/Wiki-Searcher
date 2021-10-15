@@ -27,7 +27,6 @@ class TextProcessor(object):
 
         self.doc_map = {}
         self.weights = {'t': 7, 'i': 3, 'c': 2, 'l': 1, 'r': 1, 'b': 1}
-        # self.bad_title = {'wikipedia:', 'template:', 'file:', 'category:'}
 
     def process_doc(self, doc):
         self.doc_map = {}
@@ -41,51 +40,36 @@ class TextProcessor(object):
         content = self.extract_links(content)
         self.cleanup(content, 'b')
         self.extract_title(title)
-        # if any(x in title for x in self.bad_title):
-        #     self.bad_doc()
 
     def extract_title(self, title):
         self.cleanup(title, 't')
 
-    # Remove infoboxes
-    def extract_infobox(self, content):
-        def re_sub(match):
-            self.cleanup(match.group(0), 'i')
+    def re_sub(self, category):
+        def replace(match):
+            self.cleanup(match.group(0), category)
             return ' '
 
-        return self.infobox_regex.sub(re_sub, content)
+        return replace
+
+    # Remove infoboxes
+    def extract_infobox(self, content):
+        return self.infobox_regex.sub(self.re_sub('i'), content)
 
     # Remove Category
     def extract_categories(self, content):
-        def re_sub(match):
-            self.cleanup(match.group(0), 'c')
-            return ' '
-
-        return self.category_regex.sub(re_sub, content)
+        return self.category_regex.sub(self.re_sub('c'), content)
 
     # Remove reference tags
     def extract_ref_tags(self, content):
-        def re_sub(match):
-            self.cleanup(match.group(0), 'r')
-            return ' '
-
-        return self.ref1_regex.sub(re_sub, content)
+        return self.ref1_regex.sub(self.re_sub('r'), content)
 
     # Remove references section
     def extract_ref_section(self, content):
-        def re_sub(match):
-            self.cleanup(match.group(0), 'r')
-            return ' '
-
-        return self.ref2_regex.sub(re_sub, content)
+        return self.ref2_regex.sub(self.re_sub('r'), content)
 
     # Remove external links section
     def extract_links(self, content):
-        def re_sub(match):
-            self.cleanup(match.group(0), 'l')
-            return ' '
-
-        return self.link_regex.sub(re_sub, content)
+        return self.link_regex.sub(self.re_sub('l'), content)
 
     def cleanup(self, ct, tag):
 
@@ -104,6 +88,3 @@ class TextProcessor(object):
                     self.doc_map[tok][1] += tag
                 else:
                     self.doc_map[tok] = [val * self.weights[tag], tag]
-
-    # def bad_doc(self):
-    #     self.doc_map = {tok: [1 + (ct // 10), tags] for tok, (ct, tags) in self.doc_map.items()}

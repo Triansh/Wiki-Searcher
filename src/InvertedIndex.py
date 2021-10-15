@@ -94,6 +94,9 @@ class InvertedIndex(object):
         with open(os.path.join(self.path_to_index, 'heads.txt'), 'w') as f:
             f.write(self.index_heads)
 
+        with open(os.path.join(self.path_to_index, 'freqs.txt'), 'w') as f:
+            f.write(self.doc_freq.rstrip())
+
         for filename in os.listdir(self.path_to_index):
             if filename.startswith('__'):
                 os.remove(os.path.join(self.path_to_index, filename))
@@ -114,12 +117,9 @@ class InvertedIndex(object):
             return
         with open(self.get_title_filename(self.title_file_count), 'w') as f:
             f.write(self.titles)
-        with open(self.get_doc_freq_filename(self.title_file_count), 'w') as f:
-            f.write(self.doc_freq)
         self.title_file_count += 1
         self.title_count = 0
         self.titles = ""
-        self.doc_freq = ""
 
     def write_indexes(self):
         if len(self.posting) == 0:

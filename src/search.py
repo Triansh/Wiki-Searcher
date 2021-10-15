@@ -26,10 +26,8 @@ class QueryProcessor(Ranker):
         self.results = []
         self.final_result = ''
 
-        for i in range(
-                sum((1 if x.startswith('freq_') else 0) for x in os.listdir(self.path_to_index))):
-            with open(os.path.join(self.path_to_index, f'freq_{i}.txt'), 'r') as f:
-                self.doc_size += [int(z) for x in f if (z := x.rstrip()) != '']
+        with open(os.path.join(self.path_to_index, f'freqs.txt'), 'r') as f:
+            self.doc_size += [int(z) for x in f if (z := x.rstrip()) != '']
 
         self.field_regex = re.compile(r"[tbircl]:")
 
